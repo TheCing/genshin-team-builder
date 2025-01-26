@@ -1,0 +1,708 @@
+@font-face {
+  font-family: "GenshinFont";
+  src: url("/fonts/zhcn.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* CSS Variables */
+:root {
+  --color-anemo: #33ccb3;
+  --color-geo: #cfa726;
+  --color-electro: #d376f0;
+  --color-dendro: #7bb42d;
+  --color-hydro: #1c72fd;
+  --color-pyro: #e2311d;
+  --color-cryo: #98c8e8;
+}
+
+/* Global Styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "GenshinFont", Arial, sans-serif;
+  background: #2d2d2d;
+  color: #fff;
+  padding: 1rem;
+}
+
+/* Team Builder Main Container */
+.team-builder {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.team-builder__title {
+  font-family: "GenshinFont", Arial, sans-serif;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.team-builder__section-title {
+  font-family: "GenshinFont", Arial, sans-serif;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+/* Save Team Form */
+.team-builder__save-form {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  align-items: center;
+}
+
+.team-builder__team-name-input {
+  flex: 1;
+  padding: 0.4rem 0.8rem;
+  background: #3c3c3c;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.team-builder__team-name-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.team-builder__save-button {
+  background: #69ff77;
+  color: #2d2d2d;
+  font-weight: 600;
+}
+
+.team-builder__save-button:hover {
+  background: #7dff89;
+}
+
+/* Saved Teams Section */
+.team-builder__saved-teams {
+  @extend .panel;
+  margin: 1.5rem 0;
+}
+
+.team-builder__team-item {
+  background: rgba(60, 60, 60, 0.5);
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.team-builder__team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.team-builder__team-name {
+  font-family: "GenshinFont", Arial, sans-serif;
+  color: #69ff77;
+  font-size: 1.2rem;
+}
+
+.team-builder__team-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.team-builder__team-action-button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin: 0;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.team-builder__team-action-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.team-builder__team-action-button--delete:hover {
+  background: rgba(255, 0, 0, 0.6);
+}
+
+.team-builder__team-members {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.team-builder__team-member {
+  width: 80px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.team-builder__team-member-image {
+  width: 64px;
+  height: 64px;
+  border-radius: 4px;
+  margin-bottom: 0.25rem;
+}
+
+.team-builder__team-member-name {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  display: block;
+  text-align: center;
+  transform-origin: center center;
+  transform: scale(var(--scale, 1));
+}
+
+/* Character Manager Section */
+.team-builder__character-manager {
+  @extend .panel;
+  margin: 1.5rem 0;
+}
+
+/* Data Controls */
+.team-builder__data-controls {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1.5rem;
+}
+
+.team-builder__export-button {
+  background: #6c6c6c;
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.team-builder__export-button:hover {
+  background: #7d7d7d;
+}
+
+.team-builder__import-input {
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+/* Divider */
+.team-builder__divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  margin: 2rem 0;
+}
+
+/* 
+  A generic container or "panel" class for any major section.
+  - Dark, semi-translucent background
+  - Adds margin-bottom to separate from adjacent elements
+*/
+.panel {
+  background: rgba(35, 35, 35, 0.8);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem; /* Spacing from the next element */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Spacing for headings */
+h1 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+}
+
+h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+/* 
+  Top Filter Bar (like the "Level" filter).
+  Adds bottom margin to create space after it.
+*/
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(50, 50, 50, 0.7);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 1rem; /* Space below the filter bar */
+}
+
+.panel-header .filter-label {
+  color: #cfcfcf;
+  font-size: 0.9rem;
+}
+
+.panel-header select {
+  background: #4a4a4a;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Characters Grid */
+.characters-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 0.75rem; /* Space between cards */
+}
+
+.character-card:hover {
+  transform: translateY(-2px);
+}
+
+.character-card__image {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  margin-top: 4px;
+  border-radius: 4px;
+}
+
+.character-card.selected {
+  box-shadow: 0 0 0 3px #69ff77; /* highlight color */
+  z-index: 1;
+}
+
+/* Optional corner indicator (e.g., wifi icon or slot #) */
+.character-card .corner-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  background: url("/path/to/indicator-icon.png") no-repeat center/contain;
+}
+
+/* Team Slots */
+.team-slots {
+  margin-bottom: 1.5rem;
+}
+
+.team-slots__container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.team-slot {
+  width: 100px;
+  height: 120px;
+  background: rgba(60, 60, 60, 0.8);
+  border-radius: 6px;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.team-slot--drag-over {
+  border-color: #69ff77;
+  background: rgba(105, 255, 119, 0.1);
+}
+
+.team-slot__character {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.team-slot__character-image {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.team-slot__character-name {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  text-align: center;
+  transform-origin: center center;
+  transform: scale(var(--scale, 1));
+}
+
+.team-slot__placeholder {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.team-slot__remove-button {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 0, 0, 0.6);
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  padding: 0;
+  line-height: 1;
+}
+
+.team-slot__remove-button:hover {
+  background: rgba(255, 0, 0, 0.8);
+}
+
+/* Owned Characters Manager styles */
+.owned-characters-manager {
+  margin-bottom: 1rem;
+}
+
+.owned-characters-manager label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+.owned-characters-manager input[type="checkbox"] {
+  margin-right: 0.3rem;
+}
+
+/* Buttons */
+button {
+  background: #6c6c6c;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-right: 0.5rem; /* space between buttons */
+  margin-top: 0.5rem; /* helps spacing from preceding text/inputs */
+}
+
+button:hover {
+  background: #7d7d7d;
+}
+
+.character-card--invalid {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.5);
+}
+
+/* Optional: Add a shake animation for invalid drops */
+@keyframes shake {
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+.character-card--invalid {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Error states */
+.team-builder__team-name-input--error {
+  border-color: rgba(255, 0, 0, 0.5);
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.team-slots__container--error .team-slot {
+  border-color: rgba(255, 0, 0, 0.5);
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* Add element-specific background styles */
+.character-card--anemo {
+  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
+    var(--color-anemo);
+}
+.character-card--geo {
+  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
+    var(--color-geo);
+}
+.character-card--electro {
+  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
+    var(--color-electro);
+}
+.character-card--dendro {
+  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
+    var(--color-dendro);
+}
+.character-card--hydro {
+  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
+    var(--color-hydro);
+}
+.character-card--pyro {
+  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
+    var(--color-pyro);
+}
+.character-card--cryo {
+  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
+    var(--color-cryo);
+}
+
+/* Also apply to team member cards */
+.team-builder__team-member--anemo {
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    var(--color-anemo);
+}
+.team-builder__team-member--geo {
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    var(--color-geo);
+}
+.team-builder__team-member--electro {
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    var(--color-electro);
+}
+.team-builder__team-member--dendro {
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    var(--color-dendro);
+}
+.team-builder__team-member--hydro {
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    var(--color-hydro);
+}
+.team-builder__team-member--pyro {
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    var(--color-pyro);
+}
+.team-builder__team-member--cryo {
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    var(--color-cryo);
+}
+
+.character-card--in-team {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+  pointer-events: none;
+}
+
+.character-card--in-team:hover {
+  transform: none;
+}
+
+.character-card--not-owned {
+  opacity: 0.5;
+  filter: grayscale(0.8);
+  cursor: pointer;
+}
+
+.character-card--not-owned:hover {
+  opacity: 0.8;
+  filter: grayscale(0.4);
+  transform: translateY(-2px);
+}
+
+/* Update the checkmark styles to only apply to characters in the manager */
+.team-builder__character-manager .character-card::after {
+  content: "✓";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  background: rgba(105, 255, 119, 0.9);
+  border-radius: 50%;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2d2d2d;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.team-builder__character-manager
+  .character-card:not(.character-card--not-owned)::after {
+  opacity: 1;
+}
+
+.character-drawer__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.character-drawer__sort-select {
+  background: rgba(60, 60, 60, 0.8);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.character-drawer__sort-select:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.character-drawer__sort-select:focus {
+  outline: none;
+  border-color: #69ff77;
+}
+
+/* Style the dropdown arrow */
+.character-drawer__sort-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem top 50%;
+  background-size: 0.65rem auto;
+  padding-right: 2rem;
+}
+
+/* Character card name styles */
+.character-card span {
+  display: block;
+  font-size: 0.75rem;
+  padding: 0 0.25rem;
+  margin-top: 0.25rem;
+  transform-origin: center center;
+  transform: scale(var(--scale, 1));
+}
+
+/* Add these to main.css */
+.character-image-container {
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+
+.character-image-skeleton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(60, 60, 60, 0.8) 25%,
+    rgba(80, 80, 80, 0.8) 50%,
+    rgba(60, 60, 60, 0.8) 75%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Add error boundary styles */
+.error-boundary {
+  text-align: center;
+  padding: 2rem;
+  background: rgba(255, 0, 0, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  margin: 1rem;
+}
+
+.error-boundary h2 {
+  color: #ff6b6b;
+  margin-bottom: 1rem;
+}
+
+.error-boundary button {
+  background: #ff6b6b;
+  margin-top: 1rem;
+}
+
+.error-boundary button:hover {
+  background: #ff8787;
+}
+
+/* Add these styles for character card images */
+.character-card__image {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  margin-top: 4px;
+  border-radius: 4px;
+}
+
+.character-card .character-image-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+}
+
+/* Update the character-card styles to ensure proper centering */
+.character-card {
+  position: relative;
+  width: 80px;
+  height: 110px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  text-align: center;
+  overflow: hidden;
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
