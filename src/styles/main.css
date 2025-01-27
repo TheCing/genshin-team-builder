@@ -143,8 +143,8 @@ body {
 
 .team-builder__team-members {
   display: flex;
+  align-items: flex-start;
   gap: 0.75rem;
-  flex-wrap: wrap;
 }
 
 .team-builder__team-member {
@@ -719,4 +719,87 @@ button:hover {
   font-size: 1.1rem;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 6px;
+}
+
+/* Footer Styles */
+.team-builder__footer {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.team-builder__footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.team-builder__footer-content a {
+  color: #69ff77;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.team-builder__footer-content a:hover {
+  color: #7dff89;
+  text-decoration: underline;
+}
+
+.team-builder__feedback-button {
+  padding: 0.4rem 0.8rem;
+  background: rgba(105, 255, 119, 0.1);
+  border-radius: 4px;
+  transition: background-color 0.2s !important;
+}
+
+.team-builder__feedback-button:hover {
+  background: rgba(105, 255, 119, 0.2);
+  text-decoration: none !important;
+}
+
+/* Team Resonance Styles */
+.team-builder__resonances {
+  margin-left: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.team-builder__resonance {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.team-builder__resonance-icons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.team-builder__resonance-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.team-builder__resonance-info {
+  flex: 1;
+}
+
+.team-builder__resonance-name {
+  font-size: 0.9rem;
+  color: #69ff77;
+  margin-bottom: 0.25rem;
+}
+
+.team-builder__resonance-description {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.4;
 }

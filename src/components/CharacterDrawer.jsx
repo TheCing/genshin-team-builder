@@ -106,16 +106,36 @@ function DraggableCharacter({ character, onClick, isInTeam }) {
       }
     : undefined;
 
+  // Create a mousedown flag to track if we're dragging
+  const isDragging = useRef(false);
+
+  const handleMouseDown = () => {
+    isDragging.current = false;
+  };
+
+  const handleMouseMove = () => {
+    isDragging.current = true;
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging.current && !isInTeam) {
+      onClick();
+    }
+    isDragging.current = false;
+  };
+
   return (
     <div
       ref={setNodeRef}
       className={`character-card character-card--${character.element.toLowerCase()} ${
         isInTeam ? "character-card--in-team" : ""
       }`}
-      onClick={isInTeam ? undefined : onClick}
       style={style}
-      {...(isInTeam ? {} : listeners)}
-      {...(isInTeam ? {} : attributes)}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      {...attributes}
+      {...listeners}
     >
       <CharacterImage name={character.name} className="character-card__image" />
       <span ref={nameRef}>{character.name}</span>

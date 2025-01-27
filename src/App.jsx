@@ -5,6 +5,7 @@ import TeamSlots from "./components/TeamSlots.jsx";
 import OwnedCharactersManager from "./components/CharactersManager.jsx";
 import { DndContext } from "@dnd-kit/core";
 import CharacterImage from "./components/CharacterImage.jsx";
+import TeamResonance from "./components/TeamResonance.jsx";
 
 export default function App() {
   // Load from local storage or fall back to defaults
@@ -214,6 +215,13 @@ export default function App() {
     }
   };
 
+  // Add this handler to handle the Enter key
+  const handleTeamNameKeyDown = (e) => {
+    if (e.key === "Enter") {
+      saveTeam();
+    }
+  };
+
   return (
     <DndContext onDragEnd={handleDragEnd} onDragOver={handleDragOver}>
       <div className="team-builder">
@@ -225,6 +233,7 @@ export default function App() {
             className="team-builder__team-name-input"
             value={teamName}
             onInput={(e) => setTeamName(e.target.value)}
+            onKeyDown={handleTeamNameKeyDown}
             placeholder="Team name"
           />
           <button className="team-builder__save-button" onClick={saveTeam}>
@@ -291,6 +300,11 @@ export default function App() {
                       />
                     );
                   })}
+                  <TeamResonance
+                    teamMembers={team.members.map((id) =>
+                      characters.find((c) => c.id === id)
+                    )}
+                  />
                 </div>
               </div>
             ))
@@ -335,6 +349,30 @@ export default function App() {
             Delete All Data
           </button>
         </div>
+
+        <footer className="team-builder__footer">
+          <div className="team-builder__footer-content">
+            <span>Crafted by cing</span>
+            <span>
+              Built with{" "}
+              <a
+                href="https://preactjs.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Preact
+              </a>
+            </span>
+            <a
+              href="https://github.com/TheCing/genshin-team-builder/issues/new"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="team-builder__feedback-button"
+            >
+              Give Feedback
+            </a>
+          </div>
+        </footer>
       </div>
     </DndContext>
   );
