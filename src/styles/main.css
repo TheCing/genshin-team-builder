@@ -411,8 +411,6 @@ button {
   font-size: 0.85rem;
   cursor: pointer;
   transition: background 0.2s;
-  margin-right: 0.5rem; /* space between buttons */
-  margin-top: 0.5rem; /* helps spacing from preceding text/inputs */
 }
 
 button:hover {
@@ -545,30 +543,6 @@ button:hover {
   opacity: 0.8;
   filter: grayscale(0.4);
   transform: translateY(-2px);
-}
-
-/* Update the checkmark styles to only apply to characters in the manager */
-.team-builder__character-manager .character-card::after {
-  content: "✓";
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 16px;
-  height: 16px;
-  background: rgba(105, 255, 119, 0.9);
-  border-radius: 50%;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #2d2d2d;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.team-builder__character-manager
-  .character-card:not(.character-card--not-owned)::after {
-  opacity: 1;
 }
 
 .character-drawer__header {
@@ -705,4 +679,44 @@ button:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.team-builder__danger-zone {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+.team-builder__delete-all-button {
+  background: #ff4444;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.team-builder__delete-all-button:hover {
+  background: #ff6666;
+}
+
+.team-builder__delete-all-button:active {
+  background: #cc0000;
+}
+
+.team-builder__danger-zone .team-builder__section-title {
+  color: #ff4444;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.team-builder__empty-state {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 2rem;
+  font-size: 1.1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
 }

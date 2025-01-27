@@ -560,7 +560,7 @@ export const ALL_CHARACTERS = [
     owned: true,
   },
   {
-    id: "kuki_shinobu",
+    id: "kuki-shinobu",
     name: "Kuki Shinobu",
     weapon: "Sword",
     element: "Electro",

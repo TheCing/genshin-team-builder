@@ -190,6 +190,30 @@ export default function App() {
     );
   }
 
+  const handleDeleteAllData = () => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete all data? This will remove all teams and reset character ownership."
+      )
+    ) {
+      if (
+        window.confirm(
+          "This action cannot be undone. Really delete everything?"
+        )
+      ) {
+        // Reset all states
+        setTeams([]);
+        setCharacters(ALL_CHARACTERS); // This resets to default character list
+        setCurrentTeam([null, null, null, null]);
+        setTeamName("");
+
+        // Clear localStorage
+        localStorage.removeItem("teams");
+        localStorage.removeItem("characters");
+      }
+    }
+  };
+
   return (
     <DndContext onDragEnd={handleDragEnd} onDragOver={handleDragOver}>
       <div className="team-builder">
@@ -225,43 +249,52 @@ export default function App() {
 
         <section className="team-builder__saved-teams">
           <h2 className="team-builder__section-title">Saved Teams</h2>
-          {teams.map((team, teamIndex) => (
-            <div key={teamIndex} className="team-builder__team-item">
-              <div className="team-builder__team-header">
-                <strong className="team-builder__team-name">
-                  {team.teamName}
-                </strong>
-                <div className="team-builder__team-actions">
-                  <button
-                    className="team-builder__team-action-button"
-                    onClick={() => editTeam(teamIndex)}
-                    title="Edit team"
-                  >
-                    ✎
-                  </button>
-                  <button
-                    className="team-builder__team-action-button team-builder__team-action-button--delete"
-                    onClick={() => deleteTeam(teamIndex)}
-                    title="Delete team"
-                  >
-                    ×
-                  </button>
+          {teams.length === 0 ? (
+            <p className="team-builder__empty-state">
+              No teams saved. Get building!
+            </p>
+          ) : (
+            teams.map((team, teamIndex) => (
+              <div key={teamIndex} className="team-builder__team-item">
+                <div className="team-builder__team-header">
+                  <strong className="team-builder__team-name">
+                    {team.teamName}
+                  </strong>
+                  <div className="team-builder__team-actions">
+                    <button
+                      className="team-builder__team-action-button"
+                      onClick={() => editTeam(teamIndex)}
+                      title="Edit team"
+                    >
+                      ✎
+                    </button>
+                    <button
+                      className="team-builder__team-action-button team-builder__team-action-button--delete"
+                      onClick={() => deleteTeam(teamIndex)}
+                      title="Delete team"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+                <div className="team-builder__team-members">
+                  {team.members.map((charId, memberIndex) => {
+                    const character = characters.find((c) => c.id === charId);
+                    if (!character) {
+                      console.warn(`Character with ID ${charId} not found`);
+                      return null;
+                    }
+                    return (
+                      <SavedTeamMember
+                        key={memberIndex}
+                        character={character}
+                      />
+                    );
+                  })}
                 </div>
               </div>
-              <div className="team-builder__team-members">
-                {team.members.map((charId, memberIndex) => {
-                  const character = characters.find((c) => c.id === charId);
-                  if (!character) {
-                    console.warn(`Character with ID ${charId} not found`);
-                    return null;
-                  }
-                  return (
-                    <SavedTeamMember key={memberIndex} character={character} />
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </section>
 
         <hr className="team-builder__divider" />
@@ -291,6 +324,16 @@ export default function App() {
             onChange={handleImportData}
             className="team-builder__import-input"
           />
+        </div>
+
+        <div className="team-builder__danger-zone">
+          <h2 className="team-builder__section-title">Danger Zone</h2>
+          <button
+            className="team-builder__delete-all-button"
+            onClick={handleDeleteAllData}
+          >
+            Delete All Data
+          </button>
         </div>
       </div>
     </DndContext>
