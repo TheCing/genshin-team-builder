@@ -31,6 +31,11 @@ body {
   background: #2d2d2d;
   color: #fff;
   padding: 1rem;
+  background-color: #2d2d2d;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+  background-size: cover;
+  background-attachment: fixed;
+  transition: background-image 0.3s ease;
 }
 
 /* Team Builder Main Container */
@@ -802,4 +807,116 @@ button:hover {
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.4;
+}
+
+/* Background Drawer Styles */
+.background-drawer {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 80vh;
+  width: 48px;
+  background: rgba(35, 35, 35, 0);
+  border-radius: 0 8px 8px 0;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  z-index: 1000;
+  display: flex;
+}
+
+.background-drawer--open {
+  width: 20vw;
+  background: rgba(35, 35, 35, 0.95);
+}
+
+.background-drawer__toggle {
+  width: 48px;
+  height: 48px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.background-drawer__toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.background-drawer__content {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease;
+  padding: 1rem;
+  width: calc(20vw - 48px);
+  overflow: hidden;
+}
+
+.background-drawer--open .background-drawer__content {
+  opacity: 1;
+  visibility: visible;
+}
+
+.background-drawer__title {
+  color: #fff;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.background-drawer__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  overflow-y: auto;
+  max-height: calc(80vh - 80px);
+  padding-right: 0.5rem;
+}
+
+.background-drawer__item {
+  border: none;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: transform 0.2s ease;
+}
+
+.background-drawer__item:hover {
+  transform: scale(1.02);
+}
+
+.background-drawer__item--selected {
+  outline: 2px solid #69ff77;
+}
+
+.background-drawer__thumbnail {
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  background-size: cover;
+  background-position: center;
+  border-radius: 4px;
+}
+
+/* Customize scrollbar for the background list */
+.background-drawer__list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.background-drawer__list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.background-drawer__list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.background-drawer__list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
 }

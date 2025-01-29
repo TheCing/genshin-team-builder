@@ -6,6 +6,7 @@ import OwnedCharactersManager from "./components/CharactersManager.jsx";
 import { DndContext } from "@dnd-kit/core";
 import CharacterImage from "./components/CharacterImage.jsx";
 import TeamResonance from "./components/TeamResonance.jsx";
+import BackgroundDrawer from "./components/BackgroundDrawer.jsx";
 
 export default function App() {
   // Load from local storage or fall back to defaults
@@ -224,6 +225,7 @@ export default function App() {
 
   return (
     <DndContext onDragEnd={handleDragEnd} onDragOver={handleDragOver}>
+      <BackgroundDrawer />
       <div className="team-builder">
         <h1 className="team-builder__title">Genshin Team Builder</h1>
 
