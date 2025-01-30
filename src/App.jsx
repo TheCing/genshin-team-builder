@@ -12,7 +12,20 @@ export default function App() {
   // Load from local storage or fall back to defaults
   const [characters, setCharacters] = useState(() => {
     const stored = localStorage.getItem("characters");
-    return stored ? JSON.parse(stored) : ALL_CHARACTERS;
+    if (!stored) return ALL_CHARACTERS;
+
+    const storedCharacters = JSON.parse(stored);
+
+    // Create a map of stored characters for quick lookup
+    const storedCharMap = new Map(
+      storedCharacters.map((char) => [char.id, char])
+    );
+
+    // Merge ALL_CHARACTERS with stored data, keeping ownership status
+    return ALL_CHARACTERS.map((char) => {
+      const storedChar = storedCharMap.get(char.id);
+      return storedChar ? { ...char, owned: storedChar.owned } : char;
+    });
   });
 
   const [teams, setTeams] = useState(() => {
