@@ -376,6 +376,14 @@ export const ALL_CHARACTERS = [
     owned: true,
   },
   {
+    id: "lan_yan",
+    name: "Lan Yan",
+    weapon: "Catalyst",
+    element: "Anemo",
+    rarity: 4,
+    owned: true,
+  },
+  {
     id: "layla",
     name: "Layla",
     weapon: "Sword",
