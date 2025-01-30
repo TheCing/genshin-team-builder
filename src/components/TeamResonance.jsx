@@ -1,8 +1,14 @@
 import { RESONANCES } from "../data/resonances";
 
 function calculateTeamResonances(teamMembers) {
+  // Filter out any undefined/null team members
+  const validMembers = teamMembers.filter(Boolean);
+
+  // If we don't have any valid members, return no resonances
+  if (validMembers.length === 0) return [];
+
   // Count elements in team
-  const elementCounts = teamMembers.reduce((counts, char) => {
+  const elementCounts = validMembers.reduce((counts, char) => {
     const element = char.element.toLowerCase();
     counts[element] = (counts[element] || 0) + 1;
     return counts;
@@ -30,6 +36,9 @@ function calculateTeamResonances(teamMembers) {
 }
 
 export default function TeamResonance({ teamMembers }) {
+  // Add safety check for undefined teamMembers
+  if (!teamMembers) return null;
+
   const resonances = calculateTeamResonances(teamMembers);
 
   if (resonances.length === 0) return null;

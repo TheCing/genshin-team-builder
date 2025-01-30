@@ -305,7 +305,7 @@ export default function App() {
                   {team.members.map((charId, memberIndex) => {
                     const character = characters.find((c) => c.id === charId);
                     if (!character) {
-                      console.warn(`Character with ID ${charId} not found`);
+                      // Instead of just logging a warning, we'll skip rendering this slot
                       return null;
                     }
                     return (
@@ -316,9 +316,9 @@ export default function App() {
                     );
                   })}
                   <TeamResonance
-                    teamMembers={team.members.map((id) =>
-                      characters.find((c) => c.id === id)
-                    )}
+                    teamMembers={team.members
+                      .map((id) => characters.find((c) => c.id === id))
+                      .filter(Boolean)} // Filter out any undefined characters
                   />
                 </div>
               </div>
