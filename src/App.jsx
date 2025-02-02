@@ -7,6 +7,7 @@ import { DndContext } from "@dnd-kit/core";
 import CharacterImage from "./components/CharacterImage.jsx";
 import TeamResonance from "./components/TeamResonance.jsx";
 import BackgroundDrawer from "./components/BackgroundDrawer.jsx";
+import GuidePopup from "./components/GuidePopup.jsx";
 
 export default function App() {
   // Load from local storage or fall back to defaults
@@ -180,6 +181,8 @@ export default function App() {
 
   function SavedTeamMember({ character }) {
     const nameRef = useRef(null);
+    const [showGuides, setShowGuides] = useState(false);
+    const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
       if (nameRef.current) {
@@ -190,9 +193,44 @@ export default function App() {
       }
     }, [character.name]);
 
+    const handleCharacterClick = (e) => {
+      // Stop event propagation
+      e.stopPropagation();
+
+      console.log("Character clicked:", character?.name);
+      console.log("Has guides:", character?.guides?.length > 0);
+
+      if (!character?.guides?.length) {
+        console.log("No guides available for", character?.name);
+        return;
+      }
+
+      // Calculate position for popup, accounting for scroll
+      const rect = e.currentTarget.getBoundingClientRect();
+      const scrollLeft =
+        window.pageXOffset || document.documentElement.scrollLeft;
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+
+      const newPosition = {
+        x: rect.right + scrollLeft + 10,
+        y: rect.top + scrollTop,
+      };
+      console.log("Popup position:", newPosition);
+
+      setPopupPosition(newPosition);
+      setShowGuides(true);
+      console.log("Show guides set to true");
+    };
+
     return (
       <div
-        className={`team-builder__team-member team-builder__team-member--${character.element.toLowerCase()}`}
+        className={`team-builder__team-member team-builder__team-member--${character.element.toLowerCase()} ${
+          character.guides?.length
+            ? "team-builder__team-member--has-guides"
+            : ""
+        }`}
+        onClick={handleCharacterClick}
       >
         <CharacterImage
           name={character.name}
@@ -201,6 +239,17 @@ export default function App() {
         <span ref={nameRef} className="team-builder__team-member-name">
           {character.name}
         </span>
+        {showGuides && (
+          <GuidePopup
+            character={character}
+            position={popupPosition}
+            onClose={(e) => {
+              if (e) e.stopPropagation();
+              console.log("Closing guide popup for", character?.name);
+              setShowGuides(false);
+            }}
+          />
+        )}
       </div>
     );
   }
@@ -273,6 +322,9 @@ export default function App() {
 
         <section className="team-builder__saved-teams">
           <h2 className="team-builder__section-title">Saved Teams</h2>
+          <p className="team-builder__section-description">
+            Click on a character to view their guides.
+          </p>
           {teams.length === 0 ? (
             <p className="team-builder__empty-state">
               No teams saved. Get building!

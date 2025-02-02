@@ -6,6 +6,20 @@ export const ALL_CHARACTERS = [
     element: "Geo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Full Guide",
+        url: "https://keqingmains.com/albedo/",
+      },
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/albedo-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/albedo/",
+      },
+    ],
   },
   {
     id: "alhaitham",
@@ -14,6 +28,16 @@ export const ALL_CHARACTERS = [
     element: "Dendro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/alhaitham-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/alhaitham/",
+      },
+    ],
   },
   {
     id: "aloy",
@@ -38,6 +62,16 @@ export const ALL_CHARACTERS = [
     element: "Pyro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/arlecchino-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/arlecchino/",
+      },
+    ],
   },
   {
     id: "ayaka",
@@ -46,6 +80,16 @@ export const ALL_CHARACTERS = [
     element: "Cryo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/ayaka-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/ayaka/",
+      },
+    ],
   },
   {
     id: "ayato",
@@ -54,6 +98,16 @@ export const ALL_CHARACTERS = [
     element: "Hydro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/ayato-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/ayato/",
+      },
+    ],
   },
   {
     id: "baizhu",
@@ -62,6 +116,16 @@ export const ALL_CHARACTERS = [
     element: "Dendro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/baizhu-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/baizhu/",
+      },
+    ],
   },
   {
     id: "barbara",
@@ -86,6 +150,16 @@ export const ALL_CHARACTERS = [
     element: "Pyro",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/bennett-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/bennett/",
+      },
+    ],
   },
   {
     id: "candace",
@@ -102,6 +176,16 @@ export const ALL_CHARACTERS = [
     element: "Cryo",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/charlotte-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/charlotte/",
+      },
+    ],
   },
   {
     id: "chasca",
@@ -110,6 +194,16 @@ export const ALL_CHARACTERS = [
     element: "Anemo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/chasca-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/chasca/",
+      },
+    ],
   },
   {
     id: "chevreuse",
@@ -118,6 +212,16 @@ export const ALL_CHARACTERS = [
     element: "Pyro",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/chevreuse-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/chevreuse-support/",
+      },
+    ],
   },
   {
     id: "chiori",
@@ -126,6 +230,16 @@ export const ALL_CHARACTERS = [
     element: "Geo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/chiori-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/chiori/",
+      },
+    ],
   },
   {
     id: "chongyun",
@@ -142,6 +256,16 @@ export const ALL_CHARACTERS = [
     element: "Cryo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/citlali-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/citlali/",
+      },
+    ],
   },
   {
     id: "clorinde",
@@ -150,6 +274,16 @@ export const ALL_CHARACTERS = [
     element: "Electro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/clorinde-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/clorinde/",
+      },
+    ],
   },
   {
     id: "collei",
@@ -174,6 +308,16 @@ export const ALL_CHARACTERS = [
     element: "Pyro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/dehya-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/dehya/",
+      },
+    ],
   },
   {
     id: "diluc",
@@ -182,6 +326,16 @@ export const ALL_CHARACTERS = [
     element: "Pyro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/diluc-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/diluc/",
+      },
+    ],
   },
   {
     id: "diona",
@@ -206,6 +360,16 @@ export const ALL_CHARACTERS = [
     element: "Dendro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/emilie-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/emilie/",
+      },
+    ],
   },
   {
     id: "eula",
@@ -230,6 +394,16 @@ export const ALL_CHARACTERS = [
     element: "Electro",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/fischl-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/fischl/",
+      },
+    ],
   },
   {
     id: "freminet",
@@ -246,6 +420,16 @@ export const ALL_CHARACTERS = [
     element: "Hydro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/furina-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/furina/",
+      },
+    ],
   },
   {
     id: "gaming",
@@ -262,6 +446,20 @@ export const ALL_CHARACTERS = [
     element: "Cryo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/ganyu-quickguide/",
+      },
+      {
+        title: "Infographic (Freeze)",
+        url: "https://keqingmains.com/i/ganyu-freeze/",
+      },
+      {
+        title: "Infographic (Melt)",
+        url: "https://keqingmains.com/i/ganyu-melt/",
+      },
+    ],
   },
   {
     id: "gorou",
@@ -286,6 +484,16 @@ export const ALL_CHARACTERS = [
     element: "Pyro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Full Guide",
+        url: "https://keqingmains.com/hutao/",
+      },
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/hutao-quickguide/",
+      },
+    ],
   },
   {
     id: "itto",
@@ -302,6 +510,16 @@ export const ALL_CHARACTERS = [
     element: "Anemo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/jean-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/jean/",
+      },
+    ],
   },
   {
     id: "kachina",
@@ -334,6 +552,16 @@ export const ALL_CHARACTERS = [
     element: "Anemo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/kazuha-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/kazuha/",
+      },
+    ],
   },
   {
     id: "keqing",
@@ -342,6 +570,16 @@ export const ALL_CHARACTERS = [
     element: "Electro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/keqing-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/keqing/",
+      },
+    ],
   },
   {
     id: "kinich",
@@ -350,6 +588,16 @@ export const ALL_CHARACTERS = [
     element: "Dendro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/kinich-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/kinich/",
+      },
+    ],
   },
   {
     id: "kirara",
@@ -358,6 +606,16 @@ export const ALL_CHARACTERS = [
     element: "Dendro",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/kirara-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/kirara/",
+      },
+    ],
   },
   {
     id: "klee",
@@ -366,6 +624,16 @@ export const ALL_CHARACTERS = [
     element: "Pyro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/klee-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/klee/",
+      },
+    ],
   },
   {
     id: "kokomi",
@@ -374,6 +642,16 @@ export const ALL_CHARACTERS = [
     element: "Hydro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/kokomi-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/kokomi/",
+      },
+    ],
   },
   {
     id: "lan_yan",
@@ -382,6 +660,16 @@ export const ALL_CHARACTERS = [
     element: "Anemo",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/lan-yan-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/lan-yan/",
+      },
+    ],
   },
   {
     id: "layla",
@@ -390,6 +678,16 @@ export const ALL_CHARACTERS = [
     element: "Cryo",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/layla-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/layla/",
+      },
+    ],
   },
   {
     id: "lisa",
@@ -414,6 +712,16 @@ export const ALL_CHARACTERS = [
     element: "Pyro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/lyney-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/lyney/",
+      },
+    ],
   },
   {
     id: "mavuika",
@@ -422,6 +730,16 @@ export const ALL_CHARACTERS = [
     element: "Pyro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/mavuika-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/mavuika/",
+      },
+    ],
   },
   {
     id: "mika",
@@ -438,6 +756,16 @@ export const ALL_CHARACTERS = [
     element: "Hydro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/mona-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/mona/",
+      },
+    ],
   },
   {
     id: "mualani",
@@ -446,6 +774,16 @@ export const ALL_CHARACTERS = [
     element: "Hydro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/mualani-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/mualani/",
+      },
+    ],
   },
   {
     id: "nahida",
@@ -454,6 +792,16 @@ export const ALL_CHARACTERS = [
     element: "Dendro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/nahida-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/nahida/",
+      },
+    ],
   },
   {
     id: "navia",
@@ -462,6 +810,16 @@ export const ALL_CHARACTERS = [
     element: "Geo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/navia-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/navia/",
+      },
+    ],
   },
   {
     id: "neuvillette",
@@ -470,6 +828,16 @@ export const ALL_CHARACTERS = [
     element: "Hydro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/neuvillette-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/neuvillette/",
+      },
+    ],
   },
   {
     id: "nilou",
@@ -478,6 +846,16 @@ export const ALL_CHARACTERS = [
     element: "Hydro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/nilou-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/nilou/",
+      },
+    ],
   },
   {
     id: "ningguang",
@@ -502,6 +880,16 @@ export const ALL_CHARACTERS = [
     element: "Electro",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/ororon-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/ororon/",
+      },
+    ],
   },
   {
     id: "qiqi",
@@ -518,6 +906,16 @@ export const ALL_CHARACTERS = [
     element: "Electro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/raiden-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/raiden/",
+      },
+    ],
   },
   {
     id: "razor",
@@ -534,6 +932,16 @@ export const ALL_CHARACTERS = [
     element: "Cryo",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/rosaria-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/rosaria/",
+      },
+    ],
   },
   {
     id: "sara",
@@ -542,6 +950,16 @@ export const ALL_CHARACTERS = [
     element: "Electro",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/sara-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/sara/",
+      },
+    ],
   },
   {
     id: "sayu",
@@ -566,6 +984,16 @@ export const ALL_CHARACTERS = [
     element: "Cryo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/shenhe-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/shenhe/",
+      },
+    ],
   },
   {
     id: "kuki-shinobu",
@@ -574,6 +1002,16 @@ export const ALL_CHARACTERS = [
     element: "Electro",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/kuki-shinobu-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/kuki-shinobu/",
+      },
+    ],
   },
   {
     id: "sigewinne",
@@ -582,6 +1020,16 @@ export const ALL_CHARACTERS = [
     element: "Hydro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/sigewinne-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/sigewinne/",
+      },
+    ],
   },
   {
     id: "sucrose",
@@ -590,6 +1038,16 @@ export const ALL_CHARACTERS = [
     element: "Anemo",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/sucrose-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/sucrose/",
+      },
+    ],
   },
   {
     id: "tartaglia",
@@ -598,6 +1056,16 @@ export const ALL_CHARACTERS = [
     element: "Hydro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/tartaglia-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/tartaglia/",
+      },
+    ],
   },
   {
     id: "thoma",
@@ -606,6 +1074,16 @@ export const ALL_CHARACTERS = [
     element: "Pyro",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/thoma-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/thoma/",
+      },
+    ],
   },
   {
     id: "tighnari",
@@ -614,6 +1092,16 @@ export const ALL_CHARACTERS = [
     element: "Dendro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/tighnari-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/tighnari/",
+      },
+    ],
   },
   {
     id: "traveler-anemo",
@@ -686,6 +1174,16 @@ export const ALL_CHARACTERS = [
     element: "Cryo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/wriothesley-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/wriothesley/",
+      },
+    ],
   },
   {
     id: "xiangling",
@@ -694,6 +1192,16 @@ export const ALL_CHARACTERS = [
     element: "Pyro",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/xiangling-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/xiangling/",
+      },
+    ],
   },
   {
     id: "xianyun",
@@ -710,6 +1218,16 @@ export const ALL_CHARACTERS = [
     element: "Anemo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/xiao-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/xiao/",
+      },
+    ],
   },
   {
     id: "xilonen",
@@ -718,6 +1236,16 @@ export const ALL_CHARACTERS = [
     element: "Geo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/xilonen-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/xilonen/",
+      },
+    ],
   },
   {
     id: "xingqiu",
@@ -726,6 +1254,16 @@ export const ALL_CHARACTERS = [
     element: "Hydro",
     rarity: 4,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/xingqiu-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/xingqiu/",
+      },
+    ],
   },
   {
     id: "xinyan",
@@ -766,6 +1304,16 @@ export const ALL_CHARACTERS = [
     element: "Hydro",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/yelan-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/yelan/",
+      },
+    ],
   },
   {
     id: "yoimiya",
@@ -790,5 +1338,15 @@ export const ALL_CHARACTERS = [
     element: "Geo",
     rarity: 5,
     owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/zhongli-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/zhongli/",
+      },
+    ],
   },
 ];

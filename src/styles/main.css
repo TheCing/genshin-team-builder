@@ -59,6 +59,12 @@ body {
   color: #fff;
 }
 
+.team-builder__section-description {
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
 /* Save Team Form */
 .team-builder__save-form {
   display: flex;
@@ -919,4 +925,76 @@ button:hover {
 
 .background-drawer__list::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.4);
+}
+
+/* Guide Popup Styles */
+.guide-popup {
+  background: rgba(35, 35, 35, 0.95);
+  border-radius: 8px;
+  padding: 1rem;
+  min-width: 200px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.guide-popup__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.guide-popup__header h3 {
+  margin: 0;
+  color: #69ff77;
+  font-size: 1rem;
+}
+
+.guide-popup__close {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.guide-popup__close:hover {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.guide-popup__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.guide-popup__link {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.guide-popup__link:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.guide-popup__footer {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.team-slot__character-content {
+  cursor: pointer;
+}
+
+.team-builder__team-member--has-guides {
+  cursor: pointer;
 }

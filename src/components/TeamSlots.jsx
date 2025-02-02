@@ -1,6 +1,7 @@
 import { useDroppable } from "@dnd-kit/core";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "preact/hooks";
 import CharacterImage from "./CharacterImage";
+import GuidePopup from "./GuidePopup";
 
 export default function TeamSlots({
   characters,

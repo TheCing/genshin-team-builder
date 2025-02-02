@@ -76,6 +76,7 @@ export default function BackgroundDrawer() {
       "/images/bg/e7746b65do465a367ca2743c837810c7.jpeg",
       "/images/bg/f52d9b760ke14ce83e3cd1a04492dba4.jpeg",
       "/images/bg/f816c3c9fh549c32db8bd8c06fbcaeae.jpeg",
+      "/images/bg/GilwBJFXIAAy94e.jpeg",
     ];
 
     setBackgrounds(bgImages);
