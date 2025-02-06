@@ -36,6 +36,7 @@ export default function App() {
 
   const [currentTeam, setCurrentTeam] = useState([null, null, null, null]);
   const [teamName, setTeamName] = useState("");
+  const [allTeamsCollapsed, setAllTeamsCollapsed] = useState(false);
 
   // Whenever characters or teams change, update local storage
   useEffect(() => {
@@ -168,7 +169,14 @@ export default function App() {
 
   // Add these new functions
   const deleteTeam = (indexToDelete) => {
-    setTeams((prev) => prev.filter((_, index) => index !== indexToDelete));
+    const teamToDelete = teams[indexToDelete];
+    if (
+      window.confirm(
+        `Are you sure you want to delete the team "${teamToDelete.teamName}"?`
+      )
+    ) {
+      setTeams((prev) => prev.filter((_, index) => index !== indexToDelete));
+    }
   };
 
   const editTeam = (indexToEdit) => {
@@ -194,7 +202,6 @@ export default function App() {
     }, [character.name]);
 
     const handleCharacterClick = (e) => {
-      // Stop event propagation
       e.stopPropagation();
 
       console.log("Character clicked:", character?.name);
@@ -205,18 +212,29 @@ export default function App() {
         return;
       }
 
-      // Calculate position for popup, accounting for scroll
+      // Calculate position for popup, accounting for scroll and viewport
       const rect = e.currentTarget.getBoundingClientRect();
       const scrollLeft =
         window.pageXOffset || document.documentElement.scrollLeft;
       const scrollTop =
         window.pageYOffset || document.documentElement.scrollTop;
+      const viewportWidth = window.innerWidth;
+
+      // Check if there's enough space on the right
+      const spaceOnRight = viewportWidth - rect.right;
+      const popupWidth = 200; // Minimum width of the popup
+      const padding = 10; // Desired padding from edge
 
       const newPosition = {
-        x: rect.right + scrollLeft + 10,
+        x:
+          spaceOnRight >= popupWidth + padding
+            ? rect.right + scrollLeft + padding // Show on right
+            : rect.left + scrollLeft - popupWidth - padding, // Show on left
         y: rect.top + scrollTop,
       };
+
       console.log("Popup position:", newPosition);
+      console.log("Space on right:", spaceOnRight);
 
       setPopupPosition(newPosition);
       setShowGuides(true);
@@ -285,6 +303,77 @@ export default function App() {
     }
   };
 
+  function SavedTeam({ team, index, onDelete, onEdit, allTeamsCollapsed }) {
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
+    useEffect(() => {
+      setIsCollapsed(allTeamsCollapsed);
+    }, [allTeamsCollapsed]);
+
+    return (
+      <div className="team-builder__team-item">
+        <div className="team-builder__team-header">
+          <div className="team-builder__team-header-left">
+            <button
+              className={`team-builder__collapse-button ${
+                isCollapsed ? "team-builder__collapse-button--collapsed" : ""
+              }`}
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              aria-label={isCollapsed ? "Expand team" : "Collapse team"}
+            >
+              ▼
+            </button>
+            <h3 className="team-builder__team-name">{team.teamName}</h3>
+          </div>
+          <div className="team-builder__team-actions">
+            <button
+              className="team-builder__team-action-button"
+              onClick={() => onEdit(index)}
+              title="Edit team"
+            >
+              ✎
+            </button>
+            <button
+              className="team-builder__team-action-button team-builder__team-action-button--delete"
+              onClick={() => onDelete(index)}
+              title="Delete team"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+        <div
+          className={`team-builder__team-content ${
+            isCollapsed ? "team-builder__team-content--collapsed" : ""
+          }`}
+        >
+          <div className="team-builder__team-members">
+            {team.members.map((charId, memberIndex) => {
+              const character = characters.find((c) => c.id === charId);
+              if (!character) return null;
+              return (
+                <SavedTeamMember key={memberIndex} character={character} />
+              );
+            })}
+          </div>
+          <TeamResonance
+            teamMembers={team.members
+              .map((id) => characters.find((c) => c.id === id))
+              .filter(Boolean)}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  const handleCollapseAll = () => {
+    setAllTeamsCollapsed(true);
+  };
+
+  const handleExpandAll = () => {
+    setAllTeamsCollapsed(false);
+  };
+
   return (
     <DndContext onDragEnd={handleDragEnd} onDragOver={handleDragOver}>
       <BackgroundDrawer />
@@ -321,7 +410,25 @@ export default function App() {
         <hr className="team-builder__divider" />
 
         <section className="team-builder__saved-teams">
-          <h2 className="team-builder__section-title">Saved Teams</h2>
+          <div className="team-builder__section-header">
+            <h2 className="team-builder__section-title">Saved Teams</h2>
+            <div className="team-builder__section-controls">
+              <button
+                className="team-builder__collapse-all-button"
+                onClick={handleCollapseAll}
+                title="Collapse all teams"
+              >
+                Collapse All
+              </button>
+              <button
+                className="team-builder__collapse-all-button"
+                onClick={handleExpandAll}
+                title="Expand all teams"
+              >
+                Expand All
+              </button>
+            </div>
+          </div>
           <p className="team-builder__section-description">
             Click on a character to view their guides.
           </p>
@@ -331,49 +438,14 @@ export default function App() {
             </p>
           ) : (
             teams.map((team, teamIndex) => (
-              <div key={teamIndex} className="team-builder__team-item">
-                <div className="team-builder__team-header">
-                  <strong className="team-builder__team-name">
-                    {team.teamName}
-                  </strong>
-                  <div className="team-builder__team-actions">
-                    <button
-                      className="team-builder__team-action-button"
-                      onClick={() => editTeam(teamIndex)}
-                      title="Edit team"
-                    >
-                      ✎
-                    </button>
-                    <button
-                      className="team-builder__team-action-button team-builder__team-action-button--delete"
-                      onClick={() => deleteTeam(teamIndex)}
-                      title="Delete team"
-                    >
-                      ×
-                    </button>
-                  </div>
-                </div>
-                <div className="team-builder__team-members">
-                  {team.members.map((charId, memberIndex) => {
-                    const character = characters.find((c) => c.id === charId);
-                    if (!character) {
-                      // Instead of just logging a warning, we'll skip rendering this slot
-                      return null;
-                    }
-                    return (
-                      <SavedTeamMember
-                        key={memberIndex}
-                        character={character}
-                      />
-                    );
-                  })}
-                  <TeamResonance
-                    teamMembers={team.members
-                      .map((id) => characters.find((c) => c.id === id))
-                      .filter(Boolean)} // Filter out any undefined characters
-                  />
-                </div>
-              </div>
+              <SavedTeam
+                key={teamIndex}
+                team={team}
+                index={teamIndex}
+                onDelete={deleteTeam}
+                onEdit={editTeam}
+                allTeamsCollapsed={allTeamsCollapsed}
+              />
             ))
           )}
         </section>

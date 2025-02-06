@@ -4,13 +4,14 @@ export default function BackgroundDrawer() {
   const [isOpen, setIsOpen] = useState(false);
   const [backgrounds, setBackgrounds] = useState([]);
   const [selectedBg, setSelectedBg] = useState(
-    localStorage.getItem("selectedBackground") || null
+    localStorage.getItem("selectedBackground") || "none"
   );
 
   // Load background images on mount
   useEffect(() => {
     // Get all background images from the /images/bg directory
     const bgImages = [
+      "none", // Add "none" as first option
       "/images/bg/014e54f8bod6ec264b09a0c6ae99f5b3.jpeg",
       "/images/bg/03c62e738h3b6cf5d3f87ff8f9d310b3.jpeg",
       "/images/bg/17c05ad08p81fe11ef36fe0974d1c06a.jpeg",
@@ -85,21 +86,12 @@ export default function BackgroundDrawer() {
     const savedBg = localStorage.getItem("selectedBackground");
     if (savedBg) {
       setSelectedBg(savedBg);
-    } else if (bgImages.length > 0) {
-      // Set first background as default if none saved
-      setSelectedBg(bgImages[0]);
+      document.body.style.backgroundImage =
+        savedBg !== "none"
+          ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${savedBg})`
+          : "none";
     }
   }, []);
-
-  // Update background when selection changes
-  useEffect(() => {
-    if (selectedBg) {
-      document.body.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${selectedBg})`;
-      document.body.style.backgroundSize = "cover";
-      document.body.style.backgroundAttachment = "fixed";
-      localStorage.setItem("selectedBackground", selectedBg);
-    }
-  }, [selectedBg]);
 
   const toggleDrawer = () => {
     setIsOpen(!isOpen);
@@ -107,6 +99,13 @@ export default function BackgroundDrawer() {
 
   const handleSelectBackground = (bgPath) => {
     setSelectedBg(bgPath);
+    localStorage.setItem("selectedBackground", bgPath);
+
+    // Update body background
+    document.body.style.backgroundImage =
+      bgPath !== "none"
+        ? `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${bgPath})`
+        : "none";
   };
 
   return (
@@ -133,10 +132,16 @@ export default function BackgroundDrawer() {
               }`}
               onClick={() => handleSelectBackground(bgPath)}
             >
-              <div
-                className="background-drawer__thumbnail"
-                style={{ backgroundImage: `url(${bgPath})` }}
-              />
+              {bgPath === "none" ? (
+                <div className="background-drawer__thumbnail background-drawer__thumbnail--none">
+                  No Background
+                </div>
+              ) : (
+                <div
+                  className="background-drawer__thumbnail"
+                  style={{ backgroundImage: `url(${bgPath})` }}
+                />
+              )}
             </button>
           ))}
         </div>
