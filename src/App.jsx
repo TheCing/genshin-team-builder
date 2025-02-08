@@ -440,6 +440,25 @@ export default function App() {
         console.error("Error loading shared team:", err);
       }
     }
+    // Handle the new share URL format
+    const pathParts = window.location.pathname.split("/");
+    if (pathParts[1] === "share" && pathParts[2]) {
+      try {
+        const decodedTeam = JSON.parse(atob(pathParts[2]));
+        setCurrentTeam(decodedTeam.members);
+        setTeamName(decodedTeam.teamName);
+
+        // Update URL to root
+        window.history.replaceState({}, "", "/");
+
+        // Scroll to team builder
+        document
+          .querySelector(".team-builder__save-form")
+          ?.scrollIntoView({ behavior: "smooth" });
+      } catch (err) {
+        console.error("Error loading shared team:", err);
+      }
+    }
   }, []);
 
   return (
