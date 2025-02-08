@@ -116,6 +116,7 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  position: relative;
 }
 
 .team-builder__team-name {
@@ -1134,4 +1135,38 @@ button:hover {
   background: rgba(0, 0, 0, 0.3);
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.9rem;
+}
+
+.team-builder__share-tooltip {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: rgba(105, 255, 119, 0.9);
+  color: #000;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  animation: fadeIn 0.2s ease;
+  z-index: 100;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Style share button differently */
+.team-builder__team-action-button:first-child {
+  background: rgba(105, 255, 119, 0.2);
+}
+
+.team-builder__team-action-button:first-child:hover {
+  background: rgba(105, 255, 119, 0.3);
 }

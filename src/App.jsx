@@ -8,6 +8,7 @@ import CharacterImage from "./components/CharacterImage.jsx";
 import TeamResonance from "./components/TeamResonance.jsx";
 import BackgroundDrawer from "./components/BackgroundDrawer.jsx";
 import GuidePopup from "./components/GuidePopup.jsx";
+import { generateSharePreview } from "./api/generate-share-image.js";
 
 export default function App() {
   // Load from local storage or fall back to defaults
@@ -305,10 +306,116 @@ export default function App() {
 
   function SavedTeam({ team, index, onDelete, onEdit, allTeamsCollapsed }) {
     const [isCollapsed, setIsCollapsed] = useState(false);
+    const [showShareTooltip, setShowShareTooltip] = useState(false);
 
     useEffect(() => {
       setIsCollapsed(allTeamsCollapsed);
     }, [allTeamsCollapsed]);
+
+    const updateMetaTags = (teamData) => {
+      // Create temporary meta tags for sharing
+      const metaTags = [
+        { property: "og:title", content: `Genshin Team: ${teamData.teamName}` },
+        {
+          property: "og:description",
+          content: `Team members: ${teamData.members
+            .map((id) => characters.find((c) => c.id === id)?.name)
+            .filter(Boolean)
+            .join(", ")}`,
+        },
+        {
+          property: "og:image",
+          content: `${window.location.origin}/images/share-preview.png`,
+        },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+        {
+          name: "twitter:title",
+          content: `Genshin Team: ${teamData.teamName}`,
+        },
+        {
+          name: "twitter:description",
+          content: `Team members: ${teamData.members
+            .map((id) => characters.find((c) => c.id === id)?.name)
+            .filter(Boolean)
+            .join(", ")}`,
+        },
+        {
+          name: "twitter:image",
+          content: `${window.location.origin}/images/share-preview.png`,
+        },
+      ];
+
+      // Remove any existing temporary meta tags
+      document
+        .querySelectorAll('meta[data-temporary="true"]')
+        .forEach((tag) => tag.remove());
+
+      // Add new meta tags
+      metaTags.forEach(({ property, name, content }) => {
+        const meta = document.createElement("meta");
+        if (property) meta.setAttribute("property", property);
+        if (name) meta.setAttribute("name", name);
+        meta.setAttribute("content", content);
+        meta.setAttribute("data-temporary", "true");
+        document.head.appendChild(meta);
+      });
+
+      // Return cleanup function
+      return () => {
+        document
+          .querySelectorAll('meta[data-temporary="true"]')
+          .forEach((tag) => tag.remove());
+      };
+    };
+
+    const handleShare = async (e) => {
+      e.stopPropagation();
+
+      try {
+        // Generate share image via API
+        await generateSharePreview({
+          teamName: team.teamName,
+          members: team.members
+            .map((id) => {
+              const char = characters.find((c) => c.id === id);
+              return char ? char.name : null;
+            })
+            .filter(Boolean),
+        });
+
+        // Create shareable data
+        const shareData = {
+          teamName: team.teamName,
+          members: team.members,
+        };
+
+        // Encode team data
+        const encodedData = btoa(JSON.stringify(shareData));
+        const shareUrl = `${window.location.origin}${window.location.pathname}?team=${encodedData}`;
+
+        // Update meta tags before sharing
+        const cleanupMetaTags = updateMetaTags(shareData);
+
+        // Only use Share API on mobile devices
+        if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
+          await navigator.share({
+            title: `Genshin Team: ${team.teamName}`,
+            text: `Check out my Genshin Impact team: ${team.teamName}`,
+            url: shareUrl,
+          });
+        } else {
+          await navigator.clipboard.writeText(shareUrl);
+          setShowShareTooltip(true);
+          setTimeout(() => setShowShareTooltip(false), 2000);
+        }
+
+        // Clean up meta tags after a short delay to allow for sharing
+        setTimeout(cleanupMetaTags, 5000);
+      } catch (err) {
+        console.error("Error sharing:", err);
+      }
+    };
 
     return (
       <div className="team-builder__team-item">
@@ -328,6 +435,13 @@ export default function App() {
           <div className="team-builder__team-actions">
             <button
               className="team-builder__team-action-button"
+              onClick={handleShare}
+              title="Share team"
+            >
+              ⤴
+            </button>
+            <button
+              className="team-builder__team-action-button"
               onClick={() => onEdit(index)}
               title="Edit team"
             >
@@ -341,6 +455,11 @@ export default function App() {
               ×
             </button>
           </div>
+          {showShareTooltip && (
+            <div className="team-builder__share-tooltip">
+              Link copied to clipboard!
+            </div>
+          )}
         </div>
         <div
           className={`team-builder__team-content ${
@@ -373,6 +492,30 @@ export default function App() {
   const handleExpandAll = () => {
     setAllTeamsCollapsed(false);
   };
+
+  // Add this effect to handle shared teams
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const sharedTeam = params.get("team");
+
+    if (sharedTeam) {
+      try {
+        const decodedTeam = JSON.parse(atob(sharedTeam));
+        setCurrentTeam(decodedTeam.members);
+        setTeamName(decodedTeam.teamName);
+
+        // Clear the URL parameter
+        window.history.replaceState({}, "", window.location.pathname);
+
+        // Scroll to team builder
+        document
+          .querySelector(".team-builder__save-form")
+          ?.scrollIntoView({ behavior: "smooth" });
+      } catch (err) {
+        console.error("Error loading shared team:", err);
+      }
+    }
+  }, []);
 
   return (
     <DndContext onDragEnd={handleDragEnd} onDragOver={handleDragOver}>
