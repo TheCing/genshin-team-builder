@@ -44,6 +44,10 @@ export default function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState(null);
   const [selectedModel, setSelectedModel] = useState("deepseek-chat");
+  const [aiPassword, setAiPassword] = useState(() => {
+    const stored = localStorage.getItem("ai_password");
+    return stored || "";
+  });
 
   // Whenever characters or teams change, update local storage
   useEffect(() => {
@@ -53,6 +57,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("teams", JSON.stringify(teams));
   }, [teams]);
+
+  useEffect(() => {
+    localStorage.setItem("ai_password", aiPassword);
+  }, [aiPassword]);
 
   // Handling adding a character to the current team
   const addToTeam = (charId) => {
@@ -474,6 +482,10 @@ export default function App() {
 
   const handleAiTeamSubmit = async (e) => {
     e.preventDefault();
+    if (!aiPassword.trim()) {
+      setGenerationError("Please enter the API password");
+      return;
+    }
     setIsGenerating(true);
     setGenerationError(null);
 
@@ -482,6 +494,7 @@ export default function App() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-API-Password": aiPassword,
         },
         body: JSON.stringify({
           prompt: aiPrompt,
@@ -490,6 +503,9 @@ export default function App() {
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Invalid API password");
+        }
         throw new Error(`API request failed with status ${response.status}`);
       }
 
@@ -548,17 +564,26 @@ export default function App() {
             />
             <div className="team-builder__ai-form-row">
               <input
+                type="password"
+                value={aiPassword}
+                onInput={(e) => setAiPassword(e.target.value)}
+                placeholder="Enter API password"
+                className="team-builder__team-name-input"
+              />
+            </div>
+            <div className="team-builder__ai-form-row">
+              <input
                 type="text"
                 value={aiPrompt}
                 onInput={(e) => setAiPrompt(e.target.value)}
                 placeholder="Describe the team you want to build..."
                 className="team-builder__team-name-input"
-                disabled={isGenerating}
+                disabled={isGenerating || !aiPassword.trim()}
               />
               <button
                 type="submit"
                 className="team-builder__save-button"
-                disabled={isGenerating}
+                disabled={isGenerating || !aiPassword.trim()}
               >
                 {isGenerating ? "Generating..." : "Generate Team"}
               </button>

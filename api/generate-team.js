@@ -5,6 +5,7 @@ import { debug, debugError } from "../scripts/debug.js";
 
 const deepseekApiKey = getEnvVar("DEEPSEEK_API_KEY");
 const perplexityApiKey = getEnvVar("PERPLEXITY_API_KEY");
+const apiPassword = getEnvVar("API_PASSWORD");
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 if (isDevelopment) {
@@ -12,6 +13,7 @@ if (isDevelopment) {
     NODE_ENV: process.env.NODE_ENV || "development",
     hasDeepseekKey: !!deepseekApiKey,
     hasPerplexityKey: !!perplexityApiKey,
+    hasApiPassword: !!apiPassword,
   });
 }
 
@@ -42,6 +44,12 @@ export async function handler(req, res) {
   }
 
   try {
+    // Check API password
+    const providedPassword = req.headers["x-api-password"];
+    if (!providedPassword || providedPassword !== apiPassword) {
+      return res.status(401).json({ error: "Invalid API password" });
+    }
+
     const { prompt, model = "deepseek-chat" } = req.body;
     if (isDevelopment) {
       debug("Received request:", { prompt, model });

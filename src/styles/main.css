@@ -1287,3 +1287,14 @@ button:hover {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.9);
 }
+
+.team-builder__ai-form input[type="password"] {
+  font-family: monospace;
+  letter-spacing: 0.1em;
+  background: rgba(60, 60, 60, 0.8);
+}
+
+.team-builder__ai-form input[type="password"]::placeholder {
+  font-family: "GenshinFont", Arial, sans-serif;
+  letter-spacing: normal;
+}
