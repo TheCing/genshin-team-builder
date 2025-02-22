@@ -1,6 +1,6 @@
 {
   "functions": {
-    "api/generate-share-image.js": {
+    "api/generate-team.js": {
       "memory": 1024,
       "maxDuration": 10
     }

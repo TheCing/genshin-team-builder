@@ -750,6 +750,24 @@ export const ALL_CHARACTERS = [
     owned: true,
   },
   {
+    id: "mizuki",
+    name: "Yumemizuki Mizuki",
+    weapon: "Catalyst",
+    element: "Anemo",
+    rarity: 5,
+    owned: true,
+    guides: [
+      {
+        title: "Quick Guide",
+        url: "https://keqingmains.com/q/mizuki-quickguide/",
+      },
+      {
+        title: "Infographic",
+        url: "https://keqingmains.com/i/mizuki/",
+      },
+    ],
+  },
+  {
     id: "mona",
     name: "Mona",
     weapon: "Catalyst",

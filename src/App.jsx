@@ -8,6 +8,9 @@ import CharacterImage from "./components/CharacterImage.jsx";
 import TeamResonance from "./components/TeamResonance.jsx";
 import BackgroundDrawer from "./components/BackgroundDrawer.jsx";
 import GuidePopup from "./components/GuidePopup.jsx";
+import Dropdown from "./components/Dropdown.jsx";
+import { Sparkles } from "lucide-react";
+import ModelSelector from "./components/ModelSelector.jsx";
 
 export default function App() {
   // Load from local storage or fall back to defaults
@@ -37,6 +40,10 @@ export default function App() {
   const [currentTeam, setCurrentTeam] = useState([null, null, null, null]);
   const [teamName, setTeamName] = useState("");
   const [allTeamsCollapsed, setAllTeamsCollapsed] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationError, setGenerationError] = useState(null);
+  const [selectedModel, setSelectedModel] = useState("deepseek-chat");
 
   // Whenever characters or teams change, update local storage
   useEffect(() => {
@@ -75,6 +82,10 @@ export default function App() {
       newTeam[slotIndex] = null;
       return newTeam;
     });
+  };
+
+  const clearTeam = () => {
+    setCurrentTeam([null, null, null, null]);
   };
 
   // Save the current team to the teams array
@@ -461,6 +472,42 @@ export default function App() {
     }
   }, []);
 
+  const handleAiTeamSubmit = async (e) => {
+    e.preventDefault();
+    setIsGenerating(true);
+    setGenerationError(null);
+
+    try {
+      const response = await fetch("/api/generate-team", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: aiPrompt,
+          model: selectedModel,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const { team } = await response.json();
+      const teamIds = team
+        .map((name) => characters.find((c) => c.name === name)?.id)
+        .filter(Boolean);
+
+      setCurrentTeam(teamIds);
+      setAiPrompt("");
+    } catch (error) {
+      console.error("Error in team generation:", error);
+      setGenerationError(error.message);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <DndContext onDragEnd={handleDragEnd} onDragOver={handleDragOver}>
       <BackgroundDrawer />
@@ -486,7 +533,41 @@ export default function App() {
           currentTeam={currentTeam}
           onRemoveMember={removeFromTeam}
           onDropCharacter={dropCharacterInSlot}
+          onClearTeam={clearTeam}
         />
+
+        <Dropdown
+          title="Try out AI team building (beta)"
+          icon={Sparkles}
+          defaultOpen={false}
+        >
+          <form onSubmit={handleAiTeamSubmit} className="team-builder__ai-form">
+            <ModelSelector
+              model={selectedModel}
+              onModelChange={setSelectedModel}
+            />
+            <div className="team-builder__ai-form-row">
+              <input
+                type="text"
+                value={aiPrompt}
+                onInput={(e) => setAiPrompt(e.target.value)}
+                placeholder="Describe the team you want to build..."
+                className="team-builder__team-name-input"
+                disabled={isGenerating}
+              />
+              <button
+                type="submit"
+                className="team-builder__save-button"
+                disabled={isGenerating}
+              >
+                {isGenerating ? "Generating..." : "Generate Team"}
+              </button>
+            </div>
+          </form>
+          {generationError && (
+            <p className="team-builder__error-message">{generationError}</p>
+          )}
+        </Dropdown>
 
         <CharacterDrawer
           characters={characters}

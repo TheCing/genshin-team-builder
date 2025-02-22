@@ -8,13 +8,23 @@ export default function TeamSlots({
   currentTeam,
   onRemoveMember,
   onDropCharacter,
+  onClearTeam,
 }) {
   // A helper to get character info by ID
   const getCharById = (id) => characters.find((c) => c.id === id);
 
   return (
     <div className="team-slots panel">
-      <h2 className="team-builder__section-title">Current Team</h2>
+      <div className="team-slots__header">
+        <h2 className="team-builder__section-title">Current Team</h2>
+        <button
+          onClick={onClearTeam}
+          className="team-builder__clear-button"
+          disabled={!currentTeam.some(Boolean)}
+        >
+          Clear Team
+        </button>
+      </div>
       <div className="team-slots__container">
         {currentTeam.map((charId, index) => (
           <TeamSlot
@@ -64,8 +74,9 @@ function TeamSlot({ index, character, onRemove, onDrop }) {
           <button
             className="team-slot__remove-button"
             onClick={() => onRemove(index)}
+            title="Remove character"
           >
-            ×
+            ✕
           </button>
         </div>
       ) : (
