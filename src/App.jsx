@@ -9,7 +9,15 @@ import TeamResonance from "./components/TeamResonance.jsx";
 import BackgroundDrawer from "./components/BackgroundDrawer.jsx";
 import GuidePopup from "./components/GuidePopup.jsx";
 import Dropdown from "./components/Dropdown.jsx";
-import { Sparkles, Key, AlertTriangle } from "lucide-react";
+import {
+  Sparkles,
+  Key,
+  AlertTriangle,
+  Settings,
+  Share2,
+  Edit,
+  Trash,
+} from "lucide-react";
 import ModelSelector from "./components/ModelSelector.jsx";
 import ChatBot from "./components/ChatBot.jsx";
 import ApiKeyManager from "./components/ApiKeyManager.jsx";
@@ -53,6 +61,7 @@ export default function App() {
     deepseek: false,
     perplexity: false,
   });
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Whenever characters or teams change, update local storage
   useEffect(() => {
@@ -390,31 +399,29 @@ export default function App() {
           </div>
           <div className="team-builder__team-actions">
             <button
-              className="team-builder__team-action-button"
+              className="team-builder__team-action-button team-builder__team-action-button--share"
               onClick={handleShare}
               title="Share team"
             >
-              ⤴
+              <Share2 size={16} />
             </button>
             <button
               className="team-builder__team-action-button"
               onClick={() => onEdit(index)}
               title="Edit team"
             >
-              ✎
+              <Edit size={16} />
             </button>
             <button
               className="team-builder__team-action-button team-builder__team-action-button--delete"
               onClick={() => onDelete(index)}
               title="Delete team"
             >
-              ×
+              <Trash size={16} />
             </button>
           </div>
           {showShareTooltip && (
-            <div className="team-builder__share-tooltip">
-              Link copied to clipboard!
-            </div>
+            <div className="team-builder__share-tooltip">Link copied!</div>
           )}
         </div>
         <div
@@ -564,9 +571,18 @@ export default function App() {
 
   return (
     <DndContext onDragEnd={handleDragEnd} onDragOver={handleDragOver}>
-      <BackgroundDrawer />
       <div className="team-builder">
-        <h1 className="team-builder__title">Genshin Team Builder</h1>
+        <div className="team-builder__header">
+          <h1 className="team-builder__title">Genshin Team Builder</h1>
+
+          <button
+            className="team-builder__settings-button"
+            onClick={() => setIsSettingsOpen(true)}
+            title="Settings"
+          >
+            <Settings size={20} />
+          </button>
+        </div>
 
         <div className="team-builder__save-form">
           <input
@@ -773,15 +789,64 @@ export default function App() {
           </div>
         </footer>
 
+        {isSettingsOpen && (
+          <div className="settings-panel">
+            <div
+              className="settings-panel__overlay"
+              onClick={() => setIsSettingsOpen(false)}
+            ></div>
+            <div className="settings-panel__content">
+              <div className="settings-panel__header">
+                <h2>Settings</h2>
+                <button
+                  className="settings-panel__close-button"
+                  onClick={() => setIsSettingsOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="settings-panel__section">
+                <h3 className="settings-panel__section-title">Background</h3>
+                <p className="settings-panel__section-description">
+                  Choose a background image for the application
+                </p>
+                <BackgroundDrawer inSettingsPanel={true} />
+              </div>
+
+              <div className="settings-panel__section">
+                <h3 className="settings-panel__section-title">API Keys</h3>
+                <p className="settings-panel__section-description">
+                  Manage your API keys for AI features
+                </p>
+                <button
+                  className="settings-panel__api-key-button"
+                  onClick={() => setIsApiKeyManagerOpen(true)}
+                >
+                  <Key size={16} />
+                  Manage API Keys
+                  {!apiKeyStatus.deepseek && !apiKeyStatus.perplexity && (
+                    <AlertTriangle
+                      size={12}
+                      className="team-builder__api-key-warning"
+                    />
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <ApiKeyManager
           isOpen={isApiKeyManagerOpen}
           onClose={() => setIsApiKeyManagerOpen(false)}
         />
+
+        <ChatBot
+          apiKeyStatus={apiKeyStatus}
+          onNeedApiKey={() => setIsApiKeyManagerOpen(true)}
+        />
       </div>
-      <ChatBot
-        apiKeyStatus={apiKeyStatus}
-        onNeedApiKey={() => setIsApiKeyManagerOpen(true)}
-      />
     </DndContext>
   );
 }

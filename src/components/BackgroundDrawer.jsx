@@ -1,7 +1,7 @@
 import { useState, useEffect } from "preact/hooks";
 
-export default function BackgroundDrawer() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function BackgroundDrawer({ inSettingsPanel = false }) {
+  const [isOpen, setIsOpen] = useState(inSettingsPanel);
   const [backgrounds, setBackgrounds] = useState([]);
   const [selectedBg, setSelectedBg] = useState(
     localStorage.getItem("selectedBackground") || "none"
@@ -94,7 +94,9 @@ export default function BackgroundDrawer() {
   }, []);
 
   const toggleDrawer = () => {
-    setIsOpen(!isOpen);
+    if (!inSettingsPanel) {
+      setIsOpen(!isOpen);
+    }
   };
 
   const handleSelectBackground = (bgPath) => {
@@ -108,9 +110,43 @@ export default function BackgroundDrawer() {
         : "none";
   };
 
+  // If in settings panel, render a simplified version
+  if (inSettingsPanel) {
+    return (
+      <div className="background-selector">
+        <div className="background-selector__list">
+          {backgrounds.map((bgPath) => (
+            <button
+              key={bgPath}
+              className={`background-selector__item ${
+                selectedBg === bgPath
+                  ? "background-selector__item--selected"
+                  : ""
+              }`}
+              onClick={() => handleSelectBackground(bgPath)}
+            >
+              {bgPath === "none" ? (
+                <div className="background-selector__thumbnail background-selector__thumbnail--none">
+                  None
+                </div>
+              ) : (
+                <div
+                  className="background-selector__thumbnail"
+                  style={{ backgroundImage: `url(${bgPath})` }}
+                />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Original drawer for standalone mode (will be hidden in the UI but kept for backward compatibility)
   return (
     <div
       className={`background-drawer ${isOpen ? "background-drawer--open" : ""}`}
+      style={{ display: "none" }} // Hide the standalone drawer
     >
       <button
         className="background-drawer__toggle"
