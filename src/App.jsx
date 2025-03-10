@@ -9,8 +9,12 @@ import TeamResonance from "./components/TeamResonance.jsx";
 import BackgroundDrawer from "./components/BackgroundDrawer.jsx";
 import GuidePopup from "./components/GuidePopup.jsx";
 import Dropdown from "./components/Dropdown.jsx";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Key, AlertTriangle } from "lucide-react";
 import ModelSelector from "./components/ModelSelector.jsx";
+import ChatBot from "./components/ChatBot.jsx";
+import ApiKeyManager from "./components/ApiKeyManager.jsx";
+import "./styles/api-key-manager.css";
+import "./styles/api-key-button.css";
 
 export default function App() {
   // Load from local storage or fall back to defaults
@@ -44,9 +48,10 @@ export default function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationError, setGenerationError] = useState(null);
   const [selectedModel, setSelectedModel] = useState("deepseek-chat");
-  const [aiPassword, setAiPassword] = useState(() => {
-    const stored = localStorage.getItem("ai_password");
-    return stored || "";
+  const [isApiKeyManagerOpen, setIsApiKeyManagerOpen] = useState(false);
+  const [apiKeyStatus, setApiKeyStatus] = useState({
+    deepseek: false,
+    perplexity: false,
   });
 
   // Whenever characters or teams change, update local storage
@@ -58,9 +63,16 @@ export default function App() {
     localStorage.setItem("teams", JSON.stringify(teams));
   }, [teams]);
 
+  // Check if API keys exist
   useEffect(() => {
-    localStorage.setItem("ai_password", aiPassword);
-  }, [aiPassword]);
+    const deepseekKey = localStorage.getItem("user_deepseek_key");
+    const perplexityKey = localStorage.getItem("user_perplexity_key");
+
+    setApiKeyStatus({
+      deepseek: !!deepseekKey,
+      perplexity: !!perplexityKey,
+    });
+  }, [isApiKeyManagerOpen]);
 
   // Handling adding a character to the current team
   const addToTeam = (charId) => {
@@ -482,20 +494,46 @@ export default function App() {
 
   const handleAiTeamSubmit = async (e) => {
     e.preventDefault();
-    if (!aiPassword.trim()) {
-      setGenerationError("Please enter the API password");
+
+    // Check if user has provided API keys
+    const deepseekKey = localStorage.getItem("user_deepseek_key");
+    const perplexityKey = localStorage.getItem("user_perplexity_key");
+
+    // Check if the selected model's API key is available
+    if (selectedModel === "deepseek-chat" && !deepseekKey) {
+      setGenerationError(
+        "Please provide your Deepseek API key to use this feature"
+      );
+      setIsApiKeyManagerOpen(true);
       return;
     }
+
+    if (selectedModel === "sonar" && !perplexityKey) {
+      setGenerationError(
+        "Please provide your Perplexity API key to use this feature"
+      );
+      setIsApiKeyManagerOpen(true);
+      return;
+    }
+
     setIsGenerating(true);
     setGenerationError(null);
 
     try {
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      // Add the appropriate user API key based on selected model
+      if (selectedModel === "deepseek-chat") {
+        headers["X-User-API-Key"] = deepseekKey;
+      } else if (selectedModel === "sonar") {
+        headers["X-User-API-Key"] = perplexityKey;
+      }
+
       const response = await fetch("/api/generate-team", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-API-Password": aiPassword,
-        },
+        headers,
         body: JSON.stringify({
           prompt: aiPrompt,
           model: selectedModel,
@@ -504,7 +542,7 @@ export default function App() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          throw new Error("Invalid API password");
+          throw new Error("Invalid API key");
         }
         throw new Error(`API request failed with status ${response.status}`);
       }
@@ -557,20 +595,39 @@ export default function App() {
           icon={Sparkles}
           defaultOpen={false}
         >
-          <form onSubmit={handleAiTeamSubmit} className="team-builder__ai-form">
-            <ModelSelector
-              model={selectedModel}
-              onModelChange={setSelectedModel}
-            />
-            <div className="team-builder__ai-form-row">
-              <input
-                type="password"
-                value={aiPassword}
-                onInput={(e) => setAiPassword(e.target.value)}
-                placeholder="Enter API password"
-                className="team-builder__team-name-input"
-              />
+          {!apiKeyStatus.deepseek && !apiKeyStatus.perplexity && (
+            <div className="ai-team-generator__no-keys-warning">
+              <AlertTriangle size={16} />
+              <span>You need to provide API keys to use AI features.</span>
+              <button onClick={() => setIsApiKeyManagerOpen(true)}>
+                Add API Keys
+              </button>
             </div>
+          )}
+
+          <form onSubmit={handleAiTeamSubmit} className="team-builder__ai-form">
+            <div className="team-builder__model-selector-row">
+              <ModelSelector
+                model={selectedModel}
+                onModelChange={setSelectedModel}
+                apiKeyStatus={apiKeyStatus}
+              />
+              <button
+                className="team-builder__api-key-button team-builder__api-key-button--inline"
+                onClick={() => setIsApiKeyManagerOpen(true)}
+                title="Manage API Keys"
+              >
+                <Key size={16} />
+                API Keys
+                {!apiKeyStatus.deepseek && !apiKeyStatus.perplexity && (
+                  <AlertTriangle
+                    size={12}
+                    className="team-builder__api-key-warning"
+                  />
+                )}
+              </button>
+            </div>
+
             <div className="team-builder__ai-form-row">
               <input
                 type="text"
@@ -578,12 +635,22 @@ export default function App() {
                 onInput={(e) => setAiPrompt(e.target.value)}
                 placeholder="Describe the team you want to build..."
                 className="team-builder__team-name-input"
-                disabled={isGenerating || !aiPassword.trim()}
+                disabled={
+                  isGenerating ||
+                  (selectedModel === "deepseek-chat" &&
+                    !apiKeyStatus.deepseek) ||
+                  (selectedModel === "sonar" && !apiKeyStatus.perplexity)
+                }
               />
               <button
                 type="submit"
                 className="team-builder__save-button"
-                disabled={isGenerating || !aiPassword.trim()}
+                disabled={
+                  isGenerating ||
+                  (selectedModel === "deepseek-chat" &&
+                    !apiKeyStatus.deepseek) ||
+                  (selectedModel === "sonar" && !apiKeyStatus.perplexity)
+                }
               >
                 {isGenerating ? "Generating..." : "Generate Team"}
               </button>
@@ -705,7 +772,16 @@ export default function App() {
             </a>
           </div>
         </footer>
+
+        <ApiKeyManager
+          isOpen={isApiKeyManagerOpen}
+          onClose={() => setIsApiKeyManagerOpen(false)}
+        />
       </div>
+      <ChatBot
+        apiKeyStatus={apiKeyStatus}
+        onNeedApiKey={() => setIsApiKeyManagerOpen(true)}
+      />
     </DndContext>
   );
 }

@@ -1,0 +1,68 @@
+.model-selector {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.model-selector__dropdown {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.model-selector__dropdown:focus {
+  outline: none;
+  border-color: #4050b5;
+  box-shadow: 0 0 0 2px rgba(64, 80, 181, 0.2);
+}
+
+.model-selector__selected-info {
+  margin-top: 5px;
+  font-size: 12px;
+}
+
+.model-selector__key-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.model-selector__key-status--valid {
+  background-color: #e7f8ef;
+  color: #0d8050;
+}
+
+.model-selector__key-status--invalid {
+  background-color: #fff3f3;
+  color: #e13238;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .model-selector__dropdown {
+    background-color: #252525;
+    border-color: #444;
+    color: #eee;
+  }
+
+  .model-selector__dropdown:focus {
+    border-color: #7f8dff;
+    box-shadow: 0 0 0 2px rgba(127, 141, 255, 0.2);
+  }
+
+  .model-selector__key-status--valid {
+    background-color: #0d3826;
+    color: #57d9a3;
+  }
+
+  .model-selector__key-status--invalid {
+    background-color: #40292a;
+    color: #ff8085;
+  }
+}

@@ -3,9 +3,21 @@ import { ALL_CHARACTERS } from "../src/data/characters.js";
 import { getEnvVar } from "../scripts/loadEnv.js";
 import { debug, debugError } from "../scripts/debug.js";
 
-const deepseekApiKey = getEnvVar("DEEPSEEK_API_KEY");
-const perplexityApiKey = getEnvVar("PERPLEXITY_API_KEY");
-const apiPassword = getEnvVar("API_PASSWORD");
+// Try to get environment API keys, but make them optional
+let deepseekApiKey, perplexityApiKey;
+try {
+  deepseekApiKey = process.env.DEEPSEEK_API_KEY;
+  perplexityApiKey = process.env.PERPLEXITY_API_KEY;
+} catch (error) {
+  // It's okay if we don't have environment variables
+  // User will provide their own keys
+  if (process.env.NODE_ENV !== "production") {
+    console.log(
+      "Environment API keys not found. User must provide their own keys."
+    );
+  }
+}
+
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 if (isDevelopment) {
@@ -13,20 +25,26 @@ if (isDevelopment) {
     NODE_ENV: process.env.NODE_ENV || "development",
     hasDeepseekKey: !!deepseekApiKey,
     hasPerplexityKey: !!perplexityApiKey,
-    hasApiPassword: !!apiPassword,
   });
 }
 
-const deepseekClient = new OpenAI({
-  baseURL: "https://api.deepseek.com",
-  apiKey: deepseekApiKey,
-  defaultHeaders: { "api-key": deepseekApiKey },
-});
+// Create clients with environment API keys (will be used as fallbacks)
+let deepseekClient, perplexityClient;
 
-const perplexityClient = new OpenAI({
-  baseURL: "https://api.perplexity.ai",
-  apiKey: perplexityApiKey,
-});
+if (deepseekApiKey) {
+  deepseekClient = new OpenAI({
+    baseURL: "https://api.deepseek.com",
+    apiKey: deepseekApiKey,
+    defaultHeaders: { "api-key": deepseekApiKey },
+  });
+}
+
+if (perplexityApiKey) {
+  perplexityClient = new OpenAI({
+    baseURL: "https://api.perplexity.ai",
+    apiKey: perplexityApiKey,
+  });
+}
 
 const SYSTEM_PROMPT = `You are a Genshin Impact team building assistant utilizing your expert game knowledge and theorycrafting skills. When given a description, you must provide exactly 4 character names from this list: ${ALL_CHARACTERS.map(
   (c) => c.name
@@ -44,15 +62,17 @@ export async function handler(req, res) {
   }
 
   try {
-    // Check API password
-    const providedPassword = req.headers["x-api-password"];
-    if (!providedPassword || providedPassword !== apiPassword) {
-      return res.status(401).json({ error: "Invalid API password" });
-    }
-
     const { prompt, model = "deepseek-chat" } = req.body;
     if (isDevelopment) {
       debug("Received request:", { prompt, model });
+    }
+
+    // Get user-provided API key from headers
+    const userApiKey = req.headers["x-user-api-key"];
+
+    // Ensure we have an API key
+    if (!userApiKey) {
+      return res.status(401).json({ error: "API key is required" });
     }
 
     let client;
@@ -60,19 +80,24 @@ export async function handler(req, res) {
 
     switch (model) {
       case "sonar":
-        if (!perplexityApiKey) {
-          throw new Error("PERPLEXITY_API_KEY is not set");
-        }
-        client = perplexityClient;
+        // Always use the user-provided key
+        client = new OpenAI({
+          baseURL: "https://api.perplexity.ai",
+          apiKey: userApiKey,
+        });
         modelName = "sonar";
         break;
+
       case "deepseek-chat":
-        if (!deepseekApiKey) {
-          throw new Error("DEEPSEEK_API_KEY is not set");
-        }
-        client = deepseekClient;
+        // Always use the user-provided key
+        client = new OpenAI({
+          baseURL: "https://api.deepseek.com",
+          apiKey: userApiKey,
+          defaultHeaders: { "api-key": userApiKey },
+        });
         modelName = "deepseek-chat";
         break;
+
       default:
         throw new Error(`Unsupported model: ${model}`);
     }
@@ -142,6 +167,12 @@ export async function handler(req, res) {
     if (isDevelopment) {
       debugError("API error:", error);
     }
+
+    // Return appropriate error codes
+    if (error.message && error.message.includes("API key")) {
+      return res.status(401).json({ error: error.message });
+    }
+
     res.status(500).json({ error: "Failed to generate team" });
   }
 }
