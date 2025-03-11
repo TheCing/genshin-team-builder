@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200">
+  <defs>
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#E0D5C0" />
+    </linearGradient>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <!-- Main Logo Text -->
+  <g filter="url(#softGlow)">
+    <!-- Genshin text -->
+    <text x="300" y="90" font-family="serif" font-size="60" font-weight="600" fill="url(#mainGradient)" text-anchor="middle" letter-spacing="2">GENSHIN</text>
+    
+    <!-- Decorative line -->
+    <line x1="180" y1="110" x2="420" y2="110" stroke="url(#mainGradient)" stroke-width="1.5" />
+    
+    <!-- Team Builder text -->
+    <text x="300" y="145" font-family="serif" font-size="30" font-weight="500" fill="url(#mainGradient)" text-anchor="middle" letter-spacing="3">TEAM BUILDER</text>
+  </g>
+  
+  <!-- Subtle decorative elements -->
+  <g opacity="0.4" fill="url(#mainGradient)">
+    <!-- Small star accent left -->
+    <path d="M160,90 L170,105 L185,95 L170,85 Z" />
+    
+    <!-- Small star accent right -->
+    <path d="M440,90 L430,105 L415,95 L430,85 Z" />
+  </g>
+</svg>

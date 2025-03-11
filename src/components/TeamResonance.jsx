@@ -1,4 +1,3 @@
-import { useState } from "preact/hooks";
 import { RESONANCES } from "../data/resonances";
 
 function calculateTeamResonances(teamMembers) {
@@ -37,49 +36,28 @@ function calculateTeamResonances(teamMembers) {
 }
 
 export default function TeamResonance({ teamMembers }) {
-  const [areResonancesExpanded, setAreResonancesExpanded] = useState(false);
-
   if (!teamMembers) return null;
 
   const resonances = calculateTeamResonances(teamMembers);
   if (resonances.length === 0) return null;
 
-  const toggleResonances = () => {
-    setAreResonancesExpanded(!areResonancesExpanded);
-  };
-
   return (
-    <div className="team-builder__resonances">
+    <div className="team-builder__resonances-icons">
       {resonances.map((resonance) => (
         <div
           key={resonance.id}
-          className={`team-builder__resonance ${
-            areResonancesExpanded ? "team-builder__resonance--expanded" : ""
-          }`}
-          onClick={toggleResonances}
+          className="team-builder__resonance-icon-container"
+          title={`${resonance.name}: ${resonance.description}`}
         >
-          <div className="team-builder__resonance-summary">
-            <div className="team-builder__resonance-icons">
-              {resonance.id !== "rainbow" && (
-                <>
-                  <img
-                    src={`/images/${resonance.icon}`}
-                    alt={resonance.name}
-                    className="team-builder__resonance-icon"
-                  />
-                  <img
-                    src={`/images/${resonance.icon}`}
-                    alt={resonance.name}
-                    className="team-builder__resonance-icon"
-                  />
-                </>
-              )}
-            </div>
-            <div className="team-builder__resonance-name">{resonance.name}</div>
-          </div>
-          {areResonancesExpanded && (
-            <div className="team-builder__resonance-description">
-              {resonance.description}
+          {resonance.id !== "rainbow" ? (
+            <img
+              src={`/images/${resonance.icon}`}
+              alt={resonance.name}
+              className="team-builder__resonance-icon"
+            />
+          ) : (
+            <div className="team-builder__resonance-rainbow-icon">
+              <span>4</span>
             </div>
           )}
         </div>

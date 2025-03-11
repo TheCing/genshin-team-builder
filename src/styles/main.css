@@ -75,12 +75,27 @@ h6 {
   margin-bottom: 1rem;
 }
 
-.team-builder__title {
+.team-builder__logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.team-builder__logo {
+  height: auto;
+  width: 300px;
+  max-width: 100%;
+  margin: 0;
+}
+
+/* Keep the old title style for reference */
+/* .team-builder__title {
   font-family: var(--font-heading);
   font-size: 2rem;
   margin-bottom: 1.5rem;
   text-align: center;
-}
+} */
 
 .team-builder__section-title {
   font-family: var(--font-heading);
@@ -1004,12 +1019,13 @@ button.success:hover {
   max-height: 500px; /* Adjust based on your content */
   opacity: 1;
   overflow: hidden;
+  padding: 0.5rem 0;
 }
 
 .team-builder__team-content--collapsed {
   max-height: 0;
+  padding: 0;
   opacity: 0;
-  margin-top: 0;
 }
 
 .team-builder__section-header {
@@ -1276,50 +1292,149 @@ label.team-builder__export-button {
   font-size: 14px;
 }
 
-/* Team Resonance Styles */
-.team-builder__resonances {
+/* Team content layout */
+.team-builder__team-content-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.team-builder__team-members {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 0.5rem;
+  flex: 1;
 }
 
-.team-builder__resonance {
+/* Team Resonance Styles - Updated for icon-only display */
+.team-builder__resonances-icons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 80px;
+}
+
+.team-builder__resonance-icon-container {
   background: rgba(40, 40, 40, 0.8);
+  border-radius: 50%;
+  padding: 0.25rem;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+
+.team-builder__resonance-icon-container:hover {
+  transform: scale(1.1);
+}
+
+.team-builder__resonance-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.team-builder__resonance-rainbow-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    #ff9999,
+    #ffcc99,
+    #ffff99,
+    #99ff99,
+    #99ffff,
+    #9999ff,
+    #ff99ff
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 12px;
+  color: #333;
+}
+
+/* Resonance Legend Styles */
+.resonance-legend {
+  position: relative;
+  margin: 1rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.resonance-legend--open {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.resonance-legend__toggle {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(40, 40, 40, 0.8);
+  border: none;
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.resonance-legend__toggle:hover {
+  background: rgba(60, 60, 60, 0.8);
+}
+
+.resonance-legend__content {
+  background: rgba(30, 30, 30, 0.9);
+  padding: 1rem;
+  border-radius: 0 0 8px 8px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.resonance-legend__title {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  color: #fff;
+  text-align: center;
+}
+
+.resonance-legend__items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.resonance-legend__item {
+  background: rgba(50, 50, 50, 0.8);
   border-radius: 6px;
   padding: 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  flex: 1;
-  min-width: 150px;
-  max-width: 300px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  border: 1px solid transparent;
+  transition: transform 0.2s;
 }
 
-.team-builder__resonance:hover {
-  background: rgba(50, 50, 50, 0.8);
+.resonance-legend__item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.team-builder__resonance--expanded {
-  background: rgba(50, 50, 50, 0.9);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.team-builder__resonance-summary {
+.resonance-legend__item-header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
-.team-builder__resonance-icons {
+.resonance-legend__icon-container {
   display: flex;
   gap: 0.25rem;
 }
 
-.team-builder__resonance-icon {
+.resonance-legend__icon {
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -1327,37 +1442,39 @@ label.team-builder__export-button {
   padding: 2px;
 }
 
-.team-builder__resonance-name {
+.resonance-legend__rainbow-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    #ff9999,
+    #ffcc99,
+    #ffff99,
+    #99ff99,
+    #99ffff,
+    #9999ff,
+    #ff99ff
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: bold;
+  font-size: 12px;
+  color: #333;
+}
+
+.resonance-legend__name {
+  margin: 0;
   font-size: 0.9rem;
   color: #fff;
 }
 
-.team-builder__resonance-description {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.9rem;
+.resonance-legend__description {
+  margin: 0;
+  font-size: 0.85rem;
   line-height: 1.4;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Element icon specific styles */
-.team-builder__team-member-element {
-  background-color: transparent;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* Drag and drop styles */
@@ -1682,4 +1799,75 @@ label.team-builder__export-button {
 .team-builder__delete-all-button:hover {
   background: #e33e3e;
   /* Inherits other hover styles from data-control-button */
+}
+
+/* Animation for the generating button */
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes dotFade {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.team-builder__save-button:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+/* Styles for the generating button */
+.team-builder__generating-button {
+  animation: pulse 2s infinite ease-in-out;
+  min-width: 120px; /* Prevent button size changes during animation */
+  text-align: left; /* Align text to the left to prevent shifting */
+}
+
+/* Animation for the dots */
+.generating-dots {
+  display: inline-block;
+  min-width: 15px; /* Ensure consistent width for the dots */
+  text-align: left;
+  margin-left: -4px; /* Remove the space between text and dots */
+}
+
+/* Site Footer */
+.site-footer {
+  text-align: center;
+  padding: 1.5rem 0;
+  margin-top: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  grid-column: 1 / -1;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  line-height: 1.5;
+}
+
+.site-footer p {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.site-footer a {
+  color: #69ff77;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.site-footer a:hover {
+  color: #8dffb0;
+  text-decoration: underline;
 }

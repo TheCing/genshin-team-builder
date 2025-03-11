@@ -8,6 +8,7 @@ import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import CharacterImage from "./components/CharacterImage.jsx";
 import TeamResonance from "./components/TeamResonance.jsx";
+import ResonanceLegend from "./components/ResonanceLegend.jsx";
 import BackgroundDrawer from "./components/BackgroundDrawer.jsx";
 import Dropdown from "./components/Dropdown.jsx";
 import {
@@ -240,20 +241,22 @@ function SavedTeam({
           isCollapsed ? "team-builder__team-content--collapsed" : ""
         }`}
       >
-        <div className="team-builder__team-members">
-          {team.members.map((charId, memberIndex) => {
-            const character = characters.find((c) => c.id === charId);
-            if (!character) return null;
-            return (
-              <TeamMember key={charId || memberIndex} character={character} />
-            );
-          })}
+        <div className="team-builder__team-content-row">
+          <div className="team-builder__team-members">
+            {team.members.map((charId, memberIndex) => {
+              const character = characters.find((c) => c.id === charId);
+              if (!character) return null;
+              return (
+                <TeamMember key={charId || memberIndex} character={character} />
+              );
+            })}
+          </div>
+          <TeamResonance
+            teamMembers={team.members
+              .map((id) => characters.find((c) => c.id === id))
+              .filter(Boolean)}
+          />
         </div>
-        <TeamResonance
-          teamMembers={team.members
-            .map((id) => characters.find((c) => c.id === id))
-            .filter(Boolean)}
-        />
       </div>
     </div>
   );
@@ -310,6 +313,35 @@ const SavedTeamsContainer = memo(function SavedTeamsContainer({
   );
 },
 savedTeamsContainerPropsAreEqual);
+
+// Animated button component for the "Generating..." state
+function AnimatedGeneratingButton({ disabled }) {
+  const [text, setText] = useState("Generating");
+
+  useEffect(() => {
+    // Animation interval for the dots
+    const interval = setInterval(() => {
+      setText((prevText) => {
+        if (prevText === "Generating") return "Generating.";
+        if (prevText === "Generating.") return "Generating..";
+        if (prevText === "Generating..") return "Generating...";
+        return "Generating";
+      });
+    }, 500); // Change dots every 500ms for a smooth animation
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <button
+      type="submit"
+      className="team-builder__save-button team-builder__generating-button"
+      disabled={disabled}
+    >
+      {text}
+    </button>
+  );
+}
 
 export default function App() {
   // Load from local storage or fall back to defaults
@@ -809,7 +841,13 @@ export default function App() {
     >
       <div className="team-builder">
         <div className="team-builder__header">
-          <h1 className="team-builder__title">Genshin Team Builder</h1>
+          <div className="team-builder__logo-container">
+            <img
+              src="/images/genshin-logo-subdued.svg"
+              alt="Genshin Team Builder"
+              className="team-builder__logo"
+            />
+          </div>
 
           <button
             className="team-builder__settings-button"
@@ -904,18 +942,21 @@ export default function App() {
                     (selectedModel === "sonar" && !apiKeyStatus.perplexity)
                   }
                 />
-                <button
-                  type="submit"
-                  className="team-builder__save-button"
-                  disabled={
-                    isGenerating ||
-                    (selectedModel === "deepseek-chat" &&
-                      !apiKeyStatus.deepseek) ||
-                    (selectedModel === "sonar" && !apiKeyStatus.perplexity)
-                  }
-                >
-                  {isGenerating ? "Generating..." : "Generate Team"}
-                </button>
+                {isGenerating ? (
+                  <AnimatedGeneratingButton disabled={true} />
+                ) : (
+                  <button
+                    type="submit"
+                    className="team-builder__save-button"
+                    disabled={
+                      (selectedModel === "deepseek-chat" &&
+                        !apiKeyStatus.deepseek) ||
+                      (selectedModel === "sonar" && !apiKeyStatus.perplexity)
+                    }
+                  >
+                    Generate Team
+                  </button>
+                )}
               </div>
             </form>
             {generationError && (
@@ -946,6 +987,7 @@ export default function App() {
             <p className="team-builder__section-description">
               Click on a character to view their guides.
             </p>
+            <ResonanceLegend />
             <SavedTeamsContainer
               teams={teams}
               characters={characters}
@@ -988,6 +1030,46 @@ export default function App() {
             </button>
           </div>
         </div>
+
+        {/* Site Footer */}
+        <footer className="site-footer">
+          <p>
+            Genshin Team Builder © 2024 |
+            <a
+              href="https://github.com/TheCing/genshin-team-builder"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {" "}
+              GitHub
+            </a>{" "}
+            | Built with{" "}
+            <a
+              href="https://preactjs.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Preact
+            </a>
+            ,{" "}
+            <a
+              href="https://vitejs.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Vite
+            </a>
+            , and{" "}
+            <a
+              href="https://dndkit.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              dnd kit
+            </a>{" "}
+            | Not affiliated with HoYoverse
+          </p>
+        </footer>
 
         {isSettingsOpen && (
           <div className="settings-panel">
