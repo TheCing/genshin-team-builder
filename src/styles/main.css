@@ -1,11 +1,3 @@
-@font-face {
-  font-family: "GenshinFont";
-  src: url("/fonts/zhcn.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* CSS Variables */
 :root {
   --color-anemo: #33ccb3;
@@ -15,6 +7,10 @@
   --color-hydro: #1c72fd;
   --color-pyro: #e2311d;
   --color-cryo: #98c8e8;
+  --font-primary: "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
+  --font-heading: "Montserrat", "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
 }
 
 /* Global Styles */
@@ -27,7 +23,7 @@
 }
 
 body {
-  font-family: "GenshinFont", Arial, sans-serif;
+  font-family: var(--font-primary);
   background: #2d2d2d;
   color: #fff;
   padding: 1rem;
@@ -38,22 +34,56 @@ body {
   transition: background-image 0.3s ease;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
 /* Team Builder Main Container */
 .team-builder {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 1rem;
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  grid-gap: 1.5rem;
+  align-items: start;
+}
+
+.team-builder__left-column {
+  position: sticky;
+  top: 1rem;
+  align-self: flex-start; /* Ensure it stays at the top */
+}
+
+.team-builder__right-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.team-builder__header {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 .team-builder__title {
-  font-family: "GenshinFont", Arial, sans-serif;
+  font-family: var(--font-heading);
   font-size: 2rem;
   margin-bottom: 1.5rem;
   text-align: center;
 }
 
 .team-builder__section-title {
-  font-family: "GenshinFont", Arial, sans-serif;
+  font-family: var(--font-heading);
   font-size: 1.4rem;
   color: #fff;
 }
@@ -69,6 +99,7 @@ body {
   display: flex;
   gap: 1rem;
   margin: 1.5rem 0;
+  margin-top: 0;
   align-items: center;
 }
 
@@ -100,6 +131,7 @@ body {
 .team-builder__saved-teams {
   @extend .panel;
   margin: 1.5rem 0;
+  width: 100%;
 }
 
 .team-builder__team-item {
@@ -119,7 +151,7 @@ body {
 }
 
 .team-builder__team-name {
-  font-family: "GenshinFont", Arial, sans-serif;
+  font-family: var(--font-heading);
   color: #69ff77;
   font-size: 1.2rem;
   margin: 0;
@@ -159,34 +191,7 @@ body {
   align-items: flex-start;
   gap: 0.75rem;
   flex-wrap: wrap;
-}
-
-.team-builder__team-member {
-  width: 80px;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  padding: 0.5rem;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.team-builder__team-member-image {
-  width: 64px;
-  height: 64px;
-  border-radius: 4px;
-  margin-bottom: 0.25rem;
-  display: block;
-}
-
-.team-builder__team-member-name {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.8);
-  display: block;
-  text-align: center;
-  transform-origin: center center;
-  transform: scale(var(--scale, 1));
+  margin-bottom: 1.5rem;
 }
 
 /* Character Manager Section */
@@ -203,21 +208,37 @@ body {
   margin-top: 1.5rem;
 }
 
-.team-builder__export-button {
+/* Shared style for export/import buttons */
+.data-control-button {
   background: #6c6c6c;
   color: #fff;
-  padding: 0.4rem 0.8rem;
+  padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 1rem;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+  /* Explicitly override button hover styles */
+  box-shadow: none;
+  transform: none;
 }
 
-.team-builder__export-button:hover {
+.data-control-button:hover {
   background: #7d7d7d;
+  /* Explicitly prevent the button hover effects */
+  transform: none;
+  box-shadow: none;
+}
+
+.team-builder__export-button {
+  /* Inherits styles from data-control-button */
 }
 
 .team-builder__import-input {
-  color: #fff;
-  font-size: 0.9rem;
+  display: none;
 }
 
 /* Divider */
@@ -225,6 +246,7 @@ body {
   border: none;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
   margin: 2rem 0;
+  display: none;
 }
 
 /* 
@@ -289,6 +311,7 @@ h3 {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 0.75rem; /* Space between cards */
+  padding: 0.5rem;
 }
 
 .character-card:hover {
@@ -326,20 +349,22 @@ h3 {
 .team-slots__container {
   display: flex;
   gap: 1rem;
-  flex-wrap: wrap;
+  justify-content: left;
 }
 
+/* Update team slot to better fit character cards */
 .team-slot {
+  position: relative;
   width: 100px;
   height: 120px;
-  background: rgba(60, 60, 60, 0.8);
-  border-radius: 6px;
+  background: rgba(30, 30, 30, 0.5);
   border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
+  padding: 5px;
 }
 
 .team-slot--drag-over {
@@ -348,27 +373,72 @@ h3 {
 }
 
 .team-slot__character {
-  width: 100%;
-  height: 100%;
+  position: relative;
+  width: 80px;
+  height: 98px;
+  border-radius: 8px;
+  overflow: visible;
+  padding: 0;
+  margin: 0 auto;
+  background-color: #3a3a3a;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 0.5rem;
 }
 
+/* Ensure main content is properly contained and displayed */
+.team-slot__character-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fix team slot character image to fill the container properly */
 .team-slot__character-image {
-  width: 64px;
-  height: 64px;
-  object-fit: cover;
-  border-radius: 4px;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: top center !important;
+}
+
+/* Ensure the character-image-container preserves aspect ratio */
+.team-slot__character .character-image-container {
+  width: 100%;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
 }
 
 .team-slot__character-name {
-  font-size: 0.75rem;
-  margin-top: 0.25rem;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  background-color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+  font-size: 10px;
+  color: #222;
+  font-weight: 500;
   text-align: center;
-  transform-origin: center center;
-  transform: scale(var(--scale, 1));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transform: none;
 }
 
 .team-slot__placeholder {
@@ -378,35 +448,41 @@ h3 {
   padding: 0.5rem;
 }
 
+/* Reposition and improve the remove button */
 .team-slot__remove-button {
   position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  background: rgba(255, 107, 107, 0.2);
-  color: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 107, 107, 0.3);
-  cursor: pointer;
+  top: -10px;
+  right: -10px;
+  width: 22px;
+  height: 22px;
+  background: rgba(220, 0, 0, 0.9);
+  color: white;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
+  font-size: 12px;
   padding: 0;
-  line-height: 1;
-  transition: all 0.2s ease;
+  z-index: 10;
+  border: 2px solid white;
+  cursor: pointer;
   opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  transform: scale(0.8);
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Improved hover effects for the remove button */
 .team-slot:hover .team-slot__remove-button {
   opacity: 1;
+  transform: scale(1);
 }
 
 .team-slot__remove-button:hover {
-  background: rgba(255, 107, 107, 0.3);
-  border-color: rgba(255, 107, 107, 0.4);
-  color: #fff;
+  background: rgba(255, 0, 0, 1);
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
 }
 
 .team-slot__remove-button:active {
@@ -434,18 +510,69 @@ h3 {
 
 /* Buttons */
 button {
-  background: #6c6c6c;
+  background: #4a4a4a;
   color: #fff;
   border: none;
   border-radius: 4px;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: inherit;
 }
 
 button:hover {
-  background: #7d7d7d;
+  background: #5a5a5a;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+button:disabled {
+  background: #3a3a3a;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Primary button */
+button.primary {
+  background: #4050b5;
+}
+
+button.primary:hover {
+  background: #4f60c5;
+}
+
+button.primary:disabled {
+  background: #2a3070;
+}
+
+/* Danger button */
+button.danger {
+  background: #d32f2f;
+}
+
+button.danger:hover {
+  background: #e33e3e;
+}
+
+/* Success button */
+button.success {
+  background: #388e3c;
+}
+
+button.success:hover {
+  background: #46a34a;
 }
 
 .character-card--invalid {
@@ -454,24 +581,32 @@ button:hover {
   box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.5);
 }
 
-/* Optional: Add a shake animation for invalid drops */
+/* Error states */
+.team-builder__team-name-input--error {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.3);
+}
+
+.team-slots__container--error .team-slot {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.3);
+}
+
+/* Shake animation for invalid states */
 @keyframes shake {
   10%,
   90% {
     transform: translate3d(-1px, 0, 0);
   }
-
   20%,
   80% {
     transform: translate3d(2px, 0, 0);
   }
-
   30%,
   50%,
   70% {
     transform: translate3d(-4px, 0, 0);
   }
-
   40%,
   60% {
     transform: translate3d(4px, 0, 0);
@@ -479,78 +614,77 @@ button:hover {
 }
 
 .character-card--invalid {
-  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-}
-
-/* Error states */
-.team-builder__team-name-input--error {
-  border-color: rgba(255, 0, 0, 0.5);
-  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-}
-
-.team-slots__container--error .team-slot {
-  border-color: rgba(255, 0, 0, 0.5);
-  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+  border: 2px solid #e74c3c;
 }
 
 /* Add element-specific background styles */
 .character-card--anemo {
-  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
-    var(--color-anemo);
+  background: linear-gradient(to bottom, #74c2a8, #4e4e6e);
+  border-color: #74c2a8;
 }
+
 .character-card--geo {
-  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
-    var(--color-geo);
+  background: linear-gradient(to bottom, #fab632, #4e4e6e);
+  border-color: #fab632;
 }
+
 .character-card--electro {
-  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
-    var(--color-electro);
+  background: linear-gradient(to bottom, #af8ec1, #4e4e6e);
+  border-color: #af8ec1;
 }
+
 .character-card--dendro {
-  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
-    var(--color-dendro);
+  background: linear-gradient(to bottom, #a5c83b, #4e4e6e);
+  border-color: #a5c83b;
 }
+
 .character-card--hydro {
-  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
-    var(--color-hydro);
+  background: linear-gradient(to bottom, #4cc2f1, #4e4e6e);
+  border-color: #4cc2f1;
 }
+
 .character-card--pyro {
-  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
-    var(--color-pyro);
+  background: linear-gradient(to bottom, #f69b55, #4e4e6e);
+  border-color: #f69b55;
 }
+
 .character-card--cryo {
-  background: linear-gradient(rgba(60, 60, 60, 0.8), rgba(60, 60, 60, 0.8)),
-    var(--color-cryo);
+  background: linear-gradient(to bottom, #9fd6e3, #4e4e6e);
+  border-color: #9fd6e3;
 }
 
 /* Also apply to team member cards */
 .team-builder__team-member--anemo {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    var(--color-anemo);
+  background: linear-gradient(to bottom, #74c2a8, #4e4e6e);
+  border-color: #74c2a8;
 }
 .team-builder__team-member--geo {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    var(--color-geo);
+  background: linear-gradient(to bottom, #fab632, #4e4e6e);
+  border-color: #fab632;
 }
 .team-builder__team-member--electro {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    var(--color-electro);
+  background: linear-gradient(to bottom, #af8ec1, #4e4e6e);
+  border-color: #af8ec1;
 }
 .team-builder__team-member--dendro {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    var(--color-dendro);
+  background: linear-gradient(to bottom, #a5c83b, #4e4e6e);
+  border-color: #a5c83b;
 }
 .team-builder__team-member--hydro {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    var(--color-hydro);
+  background: linear-gradient(to bottom, #4cc2f1, #4e4e6e);
+  border-color: #4cc2f1;
 }
 .team-builder__team-member--pyro {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    var(--color-pyro);
+  background: linear-gradient(to bottom, #f69b55, #4e4e6e);
+  border-color: #f69b55;
 }
 .team-builder__team-member--cryo {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    var(--color-cryo);
+  background: linear-gradient(to bottom, #9fd6e3, #4e4e6e);
+  border-color: #9fd6e3;
 }
 
 .character-card--in-team {
@@ -576,14 +710,25 @@ button:hover {
   transform: translateY(-2px);
 }
 
-.character-drawer__header {
+.character-drawer {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  height: 100%;
+  overflow: hidden;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+  flex-direction: column;
+}
+
+.character-drawer__header {
+  padding: 1rem;
+  padding-bottom: 0.5rem;
 }
 
 .character-drawer__sort-select {
+  width: 100%;
+  margin-bottom: 0;
   background: rgba(60, 60, 60, 0.8);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -696,380 +841,137 @@ button:hover {
   height: auto;
 }
 
-/* Update the character-card styles to ensure proper centering */
-.character-card {
+/* Character Card Styles - Unified */
+.character-card,
+.team-builder__team-member {
   position: relative;
   width: 80px;
-  height: 110px;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  text-align: center;
-  overflow: hidden;
-  transition: transform 0.2s;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.team-builder__danger-zone {
-  margin-top: 4rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 0, 0, 0.2);
-}
-
-.team-builder__delete-all-button {
-  background: #ff4444;
-  color: white;
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.team-builder__delete-all-button:hover {
-  background: #ff6666;
-}
-
-.team-builder__delete-all-button:active {
-  background: #cc0000;
-}
-
-.team-builder__danger-zone .team-builder__section-title {
-  color: #ff4444;
-  font-size: 1.2rem;
-  margin-bottom: 1rem;
-}
-
-.team-builder__empty-state {
-  text-align: center;
-  color: rgba(255, 255, 255, 0.6);
-  padding: 2rem;
-  font-size: 1.1rem;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 6px;
-}
-
-/* Footer Styles */
-.team-builder__footer {
-  margin-top: 4rem;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.team-builder__footer-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.9rem;
-}
-
-.team-builder__footer-content a {
-  color: #69ff77;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.team-builder__footer-content a:hover {
-  color: #7dff89;
-  text-decoration: underline;
-}
-
-.team-builder__feedback-button {
-  padding: 0.4rem 0.8rem;
-  background: rgba(105, 255, 119, 0.1);
-  border-radius: 4px;
-  transition: background-color 0.2s !important;
-}
-
-.team-builder__feedback-button:hover {
-  background: rgba(105, 255, 119, 0.2);
-  text-decoration: none !important;
-}
-
-/* Team Resonance Styles */
-.team-builder__resonances {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-
-.team-builder__resonance {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  padding: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.team-builder__resonance:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.team-builder__resonance-summary {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.team-builder__resonance-icons {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.team-builder__resonance-icon {
-  width: 20px;
-  height: 20px;
-}
-
-.team-builder__resonance-name {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.team-builder__resonance-description {
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.4;
-}
-
-/* Background Drawer Styles */
-.background-drawer {
-  position: fixed;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 80vh;
-  width: 48px;
-  background: rgba(35, 35, 35, 0);
-  border-radius: 0 8px 8px 0;
-  transition: width 0.3s ease, background-color 0.3s ease;
-  z-index: 1000;
-  display: flex;
-}
-
-.background-drawer--open {
-  width: 20vw;
-  background: rgba(35, 35, 35, 0.95);
-}
-
-.background-drawer__toggle {
-  width: 48px;
-  height: 48px;
-  border: none;
-  background: transparent;
-  color: #fff;
-  font-size: 1.5rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  flex-shrink: 0;
-}
-
-.background-drawer__toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.background-drawer__content {
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.2s ease;
-  padding: 1rem;
-  width: calc(20vw - 48px);
-  overflow: hidden;
-}
-
-.background-drawer--open .background-drawer__content {
-  opacity: 1;
-  visibility: visible;
-}
-
-.background-drawer__title {
-  color: #fff;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-}
-
-.background-drawer__list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  overflow-y: auto;
-  max-height: calc(80vh - 80px);
-  padding-right: 0.5rem;
-}
-
-.background-drawer__item {
-  border: none;
-  padding: 0;
-  background: transparent;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: transform 0.2s ease;
-}
-
-.background-drawer__item:hover {
-  transform: scale(1.02);
-}
-
-.background-drawer__item--selected {
-  outline: 2px solid #69ff77;
-}
-
-.background-drawer__thumbnail {
-  width: 100%;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
-  background-size: cover;
-  background-position: center;
-  border-radius: 4px;
-}
-
-/* Customize scrollbar for the background list */
-.background-drawer__list::-webkit-scrollbar {
-  width: 6px;
-}
-
-.background-drawer__list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
-.background-drawer__list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
-}
-
-.background-drawer__list::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-/* Guide Popup Styles */
-.guide-popup {
-  background: rgba(35, 35, 35, 0.95);
+  height: 98px;
   border-radius: 8px;
-  padding: 1rem;
-  min-width: 200px;
-  max-width: calc(100vw - 2rem); /* Prevent overflow on mobile */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-}
-
-.guide-popup__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
-}
-
-.guide-popup__header h3 {
-  margin: 0;
-  color: #69ff77;
-  font-size: 1rem;
-}
-
-.guide-popup__close {
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.6);
+  overflow: hidden;
   cursor: pointer;
-  padding: 0.25rem;
-  font-size: 1.2rem;
-  line-height: 1;
-}
-
-.guide-popup__close:hover {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.guide-popup__content {
+  transition: all 0.2s;
+  background-color: #3a3a3a;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
 }
 
-.guide-popup__link {
-  color: #fff;
-  text-decoration: none;
-  padding: 0.5rem;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+.character-card:hover,
+.team-builder__team-member:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
-.guide-popup__link:hover {
-  background: rgba(255, 255, 255, 0.1);
+/* Image container */
+.character-card__image,
+.team-builder__team-member-image {
+  width: 100%;
+  height: 76px; /* Leave space for the name bar */
+  object-fit: cover;
+  display: block;
+  position: relative;
 }
 
-.guide-popup__footer {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+.character-card .character-image-container,
+.team-builder__team-member .character-image-container {
+  width: 100%;
+  height: 76px; /* Match the image height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Name container */
+.character-card__name-container,
+.team-builder__team-member-name-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.character-card__name,
+.team-builder__team-member-name {
+  font-size: 10px;
+  color: #222;
+  font-weight: 500;
   text-align: center;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
-.team-slot__character-content {
-  cursor: pointer;
+.character-card__element,
+.team-builder__team-member-element {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.team-builder__team-member--has-guides {
-  cursor: pointer;
+/* Element-specific styles */
+.character-card--anemo .character-card__element,
+.team-builder__team-member--anemo .team-builder__team-member-element {
+  background-image: url("/images/Element_Anemo.webp");
 }
 
-/* Add responsive adjustments */
-@media (max-width: 768px) {
-  .team-builder__team-members {
-    gap: 0.5rem;
-  }
-
-  .team-builder__team-member {
-    flex: 1 1 calc(50% - 0.5rem);
-    min-width: 120px;
-    max-width: calc(50% - 0.5rem);
-  }
-
-  .team-builder__resonance {
-    flex: 0 1 auto; /* Allow resonances to take natural width */
-  }
-
-  .background-drawer {
-    display: none;
-  }
+.character-card--geo .character-card__element,
+.team-builder__team-member--geo .team-builder__team-member-element {
+  background-image: url("/images/Element_Geo.webp");
 }
 
-@media (max-width: 480px) {
-  .team-builder__team-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
+.character-card--electro .character-card__element,
+.team-builder__team-member--electro .team-builder__team-member-element {
+  background-image: url("/images/Element_Electro.webp");
+}
 
-  .team-builder__team-member {
-    flex: 1 1 calc(50% - 0.25rem);
-    max-width: calc(50% - 0.25rem);
-  }
+.character-card--dendro .character-card__element,
+.team-builder__team-member--dendro .team-builder__team-member-element {
+  background-image: url("/images/Element_Dendro.webp");
+}
 
-  .team-builder__team-name {
-    font-size: 1rem;
-  }
+.character-card--hydro .character-card__element,
+.team-builder__team-member--hydro .team-builder__team-member-element {
+  background-image: url("/images/Element_Hydro.webp");
+}
 
-  .team-builder__team-item {
-    padding: 0.75rem;
-  }
+.character-card--pyro .character-card__element,
+.team-builder__team-member--pyro .team-builder__team-member-element {
+  background-image: url("/images/Element_Pyro.webp");
+}
 
-  .guide-popup {
-    min-width: 160px; /* Slightly smaller on mobile */
-  }
+.character-card--cryo .character-card__element,
+.team-builder__team-member--cryo .team-builder__team-member-element {
+  background-image: url("/images/Element_Cryo.webp");
+}
+
+/* State-specific styles */
+.character-card--in-team {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.character-card--not-owned {
+  opacity: 0.5;
+  filter: grayscale(0.8);
 }
 
 .team-builder__team-header-left {
@@ -1256,483 +1158,528 @@ button:hover {
   background: rgba(255, 107, 107, 0.1);
 }
 
-.model-selector {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  align-items: flex-start;
-}
-
-.model-selector__dropdown {
-  width: fit-content;
-  min-width: 150px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 0.5rem;
-  border-radius: 4px;
-  font-family: inherit;
+label.team-builder__export-button {
+  display: inline-block;
   cursor: pointer;
 }
 
-.model-selector__reasoning {
-  flex: 1;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  padding: 1rem;
-}
-
-.model-selector__reasoning h4 {
-  margin: 0 0 0.5rem 0;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.model-selector__reasoning-content {
-  margin: 0;
-  white-space: pre-wrap;
-  font-family: monospace;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.team-builder__ai-form input[type="password"] {
-  font-family: monospace;
-  letter-spacing: 0.1em;
-  background: rgba(60, 60, 60, 0.8);
-}
-
-.team-builder__ai-form input[type="password"]::placeholder {
-  font-family: "GenshinFont", Arial, sans-serif;
-  letter-spacing: normal;
-}
-
-/* Chatbot styles */
-.chatbot {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-}
-
-.chatbot__toggle {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #69ff77;
-  border: none;
-  color: #2d2d2d;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease;
-}
-
-.chatbot__toggle:hover {
-  transform: scale(1.05);
-}
-
-.chatbot__window {
-  position: absolute;
-  bottom: 60px;
-  right: 0;
-  width: 320px;
-  height: 400px;
-  background: rgba(35, 35, 35, 0.95);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transform-origin: bottom right;
-  transform: scale(0);
-  opacity: 0;
-  transition: transform 0.3s ease, opacity 0.2s ease;
-}
-
-.chatbot--open .chatbot__window {
-  transform: scale(1);
-  opacity: 1;
-}
-
-.chatbot__header {
-  padding: 1rem;
-  background: rgba(60, 60, 60, 0.5);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.chatbot__header h3 {
-  margin: 0;
-  color: #fff;
-  font-size: 1rem;
-  font-family: inherit;
-}
-
-.chatbot__messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.chatbot__message {
-  max-width: 80%;
-  padding: 0.5rem 0.75rem;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  font-family: inherit;
-  white-space: pre-wrap;
-}
-
-.chatbot__message p {
-  margin: 0;
-  padding: 0;
-}
-
-.chatbot__message p + p {
-  margin-top: 0.75rem;
-}
-
-.chatbot__message--user {
-  background: rgba(105, 255, 119, 0.2);
-  color: #fff;
-  align-self: flex-end;
-  border-bottom-right-radius: 4px;
-}
-
-.chatbot__message--bot {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  align-self: flex-start;
-  border-bottom-left-radius: 4px;
-}
-
-.chatbot__message--error {
-  background: rgba(255, 107, 107, 0.2);
-  color: #ff6b6b;
-  align-self: center;
-  border-radius: 4px;
-  font-size: 0.85rem;
-  padding: 0.5rem 1rem;
-}
-
-.chatbot__message--typing {
-  display: flex;
-  gap: 0.25rem;
-  padding: 0.75rem;
-}
-
-.chatbot__message--typing span {
-  animation: typing 1.4s infinite;
-  opacity: 0.3;
-}
-
-.chatbot__message--typing span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.chatbot__message--typing span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes typing {
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.chatbot__input-form {
-  padding: 1rem;
-  display: flex;
-  gap: 0.5rem;
-  background: rgba(60, 60, 60, 0.5);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.chatbot__input {
-  flex: 1;
-  padding: 0.5rem 0.75rem;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  color: #fff;
-  font-size: 0.9rem;
-  font-family: inherit;
-}
-
-.chatbot__input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.chatbot__send-button {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #69ff77;
-  color: #2d2d2d;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.chatbot__send-button:hover {
-  background: #7dff89;
-}
-
-.chatbot__send-button:disabled {
-  background: rgba(105, 255, 119, 0.2);
-  cursor: not-allowed;
-}
-
-/* Custom scrollbar for the messages container */
-.chatbot__messages::-webkit-scrollbar {
-  width: 6px;
-}
-
-.chatbot__messages::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.chatbot__messages::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 3px;
-}
-
-.chatbot__messages::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* Team Builder Header */
-.team-builder__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+/* Ensure the right column content is properly spaced */
+.team-builder__right-column > * {
   margin-bottom: 1.5rem;
 }
 
-.team-builder__settings-button {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #fff;
-  transition: background-color 0.2s;
+/* Ensure the saved teams section has proper spacing */
+.team-builder__saved-teams {
+  margin-top: 1rem;
 }
 
-.team-builder__settings-button:hover {
-  background: rgba(255, 255, 255, 0.2);
+/* Fix for the character cards in the drawer */
+.character-drawer .characters-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  padding-top: 0.75rem;
 }
 
-/* Settings Panel */
-.settings-panel {
+.character-drawer__content {
+  flex: 1;
+  overflow: auto;
+  padding-top: 0.25rem;
+}
+
+/* Background Drawer Styles */
+.background-drawer {
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
+  right: -300px;
+  width: 300px;
   height: 100%;
-  z-index: 1100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.settings-panel__overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-}
-
-.settings-panel__content {
-  position: relative;
-  width: 90%;
-  max-width: 600px;
-  max-height: 90vh;
   background-color: #2d2d2d;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  z-index: 1101;
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+  transition: right 0.3s ease;
+  z-index: 100;
+  overflow-y: auto;
 }
 
-.settings-panel__header {
-  padding: 16px 20px;
-  border-bottom: 1px solid #444;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.background-drawer--open {
+  right: 0;
 }
 
-.settings-panel__header h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  color: #fff;
-}
-
-.settings-panel__close-button {
-  background: none;
-  border: none;
-  color: #aaa;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 0;
+.background-drawer__toggle {
+  position: absolute;
+  top: 50%;
+  left: -30px;
   width: 30px;
-  height: 30px;
+  height: 60px;
+  background-color: #2d2d2d;
+  border: none;
+  border-radius: 5px 0 0 5px;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: background-color 0.2s;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
 }
 
-.settings-panel__close-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
-.settings-panel__section {
+.background-drawer__content {
   padding: 20px;
-  border-bottom: 1px solid #444;
 }
 
-.settings-panel__section:last-child {
-  border-bottom: none;
-}
-
-.settings-panel__section-title {
-  margin: 0 0 10px 0;
-  font-size: 1.2rem;
+.background-drawer__title {
+  margin-bottom: 15px;
   color: #fff;
+  font-size: 18px;
 }
 
-.settings-panel__section-description {
-  margin: 0 0 15px 0;
-  color: #aaa;
-  font-size: 0.9rem;
-}
-
-.settings-panel__api-key-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #3a3a3a;
-  border: 1px solid #555;
-  border-radius: 4px;
-  padding: 10px 15px;
-  color: #fff;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.settings-panel__api-key-button:hover {
-  background-color: #444;
-}
-
-/* Background Selector (in settings panel) */
-.background-selector {
-  width: 100%;
-  overflow: hidden;
-}
-
-.background-selector__list {
+.background-drawer__list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
-  max-height: 300px;
+  max-height: calc(100vh - 100px);
   overflow-y: auto;
-  padding: 5px;
 }
 
-.background-selector__item {
+.background-drawer__item {
   background: none;
   border: 2px solid transparent;
   border-radius: 4px;
-  padding: 0;
+  padding: 5px;
   cursor: pointer;
-  overflow: hidden;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
 }
 
-.background-selector__item:hover {
-  border-color: rgba(255, 255, 255, 0.5);
+.background-drawer__item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-.background-selector__item--selected {
+.background-drawer__item--selected {
   border-color: #4050b5;
 }
 
-.background-selector__thumbnail {
+.background-drawer__thumbnail {
   width: 100%;
-  height: 60px;
+  height: 80px;
   background-size: cover;
   background-position: center;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
-.background-selector__thumbnail--none {
+.background-drawer__thumbnail--none {
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #444;
   color: #fff;
-  font-size: 0.8rem;
+  font-size: 14px;
 }
 
-.background-selector__list::-webkit-scrollbar {
-  width: 8px;
+/* Team Resonance Styles */
+.team-builder__resonances {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-.background-selector__list::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+.team-builder__resonance {
+  background: rgba(40, 40, 40, 0.8);
+  border-radius: 6px;
+  padding: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+  min-width: 150px;
+  max-width: 300px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid transparent;
 }
 
-.background-selector__list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+.team-builder__resonance:hover {
+  background: rgba(50, 50, 50, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.background-selector__list::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+.team-builder__resonance--expanded {
+  background: rgba(50, 50, 50, 0.9);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Make sure the fadeIn animation is defined */
+.team-builder__resonance-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.team-builder__resonance-icons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.team-builder__resonance-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 2px;
+}
+
+.team-builder__resonance-name {
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+.team-builder__resonance-description {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-5px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Element icon specific styles */
+.team-builder__team-member-element {
+  background-color: transparent;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Drag and drop styles */
+.dragging {
+  z-index: 9999 !important;
+  pointer-events: none;
+  opacity: 1;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4) !important;
+  cursor: grabbing;
+  transform-origin: 0 0;
+  will-change: transform;
+  border: 2px solid rgba(255, 255, 255, 0.4) !important;
+  width: 80px !important;
+  height: 98px !important;
+  min-width: 80px !important;
+  max-width: 80px !important;
+  transform: translate3d(0, 0, 0) !important;
+}
+
+/* Ensure elements being dragged are visible on top */
+[data-draggable] {
+  position: relative;
+  z-index: 1;
+}
+
+[data-draggable][aria-pressed="true"] {
+  z-index: 9999;
+}
+
+/* Apply to dnd-kit drag overlay */
+.dnd-overlay {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.character-card--dragging {
+  opacity: 0.3;
+  background: rgba(0, 0, 0, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  cursor: grabbing;
+}
+
+/* Ensure image inside dragging card maintains proper dimensions */
+.dragging .character-card__image {
+  width: 100% !important;
+  height: 76px !important;
+  object-fit: cover !important;
+}
+
+.dragging .character-card__name-container {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 16px !important;
+}
+
+/* Apply element-specific background and border styling to team slot characters */
+.team-slot__character[data-element="anemo"] {
+  background: linear-gradient(to bottom, #74c2a8, #4e4e6e);
+  border-color: #74c2a8;
+}
+
+.team-slot__character[data-element="geo"] {
+  background: linear-gradient(to bottom, #fab632, #4e4e6e);
+  border-color: #fab632;
+}
+
+.team-slot__character[data-element="electro"] {
+  background: linear-gradient(to bottom, #af8ec1, #4e4e6e);
+  border-color: #af8ec1;
+}
+
+.team-slot__character[data-element="dendro"] {
+  background: linear-gradient(to bottom, #a5c83b, #4e4e6e);
+  border-color: #a5c83b;
+}
+
+.team-slot__character[data-element="hydro"] {
+  background: linear-gradient(to bottom, #4cc2f1, #4e4e6e);
+  border-color: #4cc2f1;
+}
+
+.team-slot__character[data-element="pyro"] {
+  background: linear-gradient(to bottom, #f69b55, #4e4e6e);
+  border-color: #f69b55;
+}
+
+.team-slot__character[data-element="cryo"] {
+  background: linear-gradient(to bottom, #9fd6e3, #4e4e6e);
+  border-color: #9fd6e3;
+}
+
+/* Fix element icon positioning */
+.team-slot__character-element {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 3;
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Element-specific styles for the team slot character element icons */
+.team-slot__character[data-element="anemo"] .team-slot__character-element {
+  background-image: url("/images/Element_Anemo.webp");
+}
+
+.team-slot__character[data-element="geo"] .team-slot__character-element {
+  background-image: url("/images/Element_Geo.webp");
+}
+
+.team-slot__character[data-element="electro"] .team-slot__character-element {
+  background-image: url("/images/Element_Electro.webp");
+}
+
+.team-slot__character[data-element="dendro"] .team-slot__character-element {
+  background-image: url("/images/Element_Dendro.webp");
+}
+
+.team-slot__character[data-element="hydro"] .team-slot__character-element {
+  background-image: url("/images/Element_Hydro.webp");
+}
+
+.team-slot__character[data-element="pyro"] .team-slot__character-element {
+  background-image: url("/images/Element_Pyro.webp");
+}
+
+.team-slot__character[data-element="cryo"] .team-slot__character-element {
+  background-image: url("/images/Element_Cryo.webp");
+}
+
+/* Add a style for the image wrapper */
+.team-slot__character-image-wrapper {
+  width: 100%;
+  height: 76px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Global popup backdrop */
+.global-popup-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Simplified Guide Popup Styles */
+.guide-popup {
+  width: 90%;
+  max-width: 400px;
+  background: #222;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  padding: 0;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Make sure all children have proper pointer events */
+.guide-popup * {
+  pointer-events: auto !important;
+}
+
+.guide-popup__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.guide-popup__header h3 {
+  font-size: 16px;
+  margin: 0;
+  color: #fff;
+}
+
+.guide-popup__close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.guide-popup__close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.guide-popup__content {
+  padding: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #333;
+}
+
+.guide-popup__link {
+  display: block;
+  color: #4cc2f1;
+  text-decoration: none;
+  padding: 10px 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  transition: all 0.2s;
+  border-left: 3px solid rgba(76, 194, 241, 0.5);
+}
+
+.guide-popup__link:hover {
+  background: rgba(76, 194, 241, 0.1);
+  transform: translateX(5px);
+  border-left-color: rgba(76, 194, 241, 1);
+}
+
+.guide-popup__footer {
+  padding: 10px 15px;
+  background: rgba(0, 0, 0, 0.15);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Add indicator for characters with guides */
+.team-builder__team-member--has-guides::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  background-color: #4cc2f1;
+  border-radius: 50%;
+  box-shadow: 0 0 4px #4cc2f1, 0 0 8px rgba(76, 194, 241, 0.5);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(76, 194, 241, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 4px rgba(76, 194, 241, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(76, 194, 241, 0);
+  }
+}
+
+/* Disable user-select on team member cards */
+.team-builder__team-member {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Add keyboard navigation support */
+.guide-popup__link:focus {
+  outline: 2px solid #4cc2f1;
+  background: rgba(76, 194, 241, 0.1);
+  transform: translateX(5px);
+}
+
+.guide-popup__close:focus {
+  outline: 2px solid #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Danger Zone */
+.team-builder__danger-zone {
+  margin-top: 1.5rem;
+}
+
+.team-builder__delete-all-button {
+  background: #d32f2f;
+  /* Inherits other styles from data-control-button */
+}
+
+.team-builder__delete-all-button:hover {
+  background: #e33e3e;
+  /* Inherits other hover styles from data-control-button */
 }

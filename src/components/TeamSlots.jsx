@@ -1,7 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import { useRef, useEffect, useState } from "preact/hooks";
 import CharacterImage from "./CharacterImage";
-import GuidePopup from "./GuidePopup";
 
 export default function TeamSlots({
   characters,
@@ -63,13 +62,21 @@ function TeamSlot({ index, character, onRemove, onDrop }) {
       className={`team-slot ${isOver ? "team-slot--drag-over" : ""}`}
     >
       {character ? (
-        <div className="team-slot__character">
-          <CharacterImage
-            name={character.name}
-            className="team-slot__character-image"
-          />
-          <div ref={nameRef} className="team-slot__character-name">
-            {character.name}
+        <div
+          className="team-slot__character"
+          data-element={character.element.toLowerCase()}
+        >
+          <div className="team-slot__character-content">
+            <div className="team-slot__character-image-wrapper">
+              <CharacterImage
+                name={character.name}
+                className="team-slot__character-image"
+              />
+            </div>
+            <div className="team-slot__character-element"></div>
+            <div ref={nameRef} className="team-slot__character-name">
+              {character.name}
+            </div>
           </div>
           <button
             className="team-slot__remove-button"

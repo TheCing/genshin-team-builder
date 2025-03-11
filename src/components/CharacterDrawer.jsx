@@ -6,9 +6,8 @@ export default function CharacterDrawer({
   characters,
   onSelectCharacter,
   currentTeam,
+  sortBy,
 }) {
-  const [sortBy, setSortBy] = useState("element");
-
   const sortedCharacters = useMemo(() => {
     const elementOrder = [
       "pyro",
@@ -54,36 +53,25 @@ export default function CharacterDrawer({
   }, [characters, sortBy]);
 
   return (
-    <div className="character-drawer panel">
-      <div className="character-drawer__header">
-        <h2 className="team-builder__section-title">Character Drawer</h2>
-        <select
-          className="character-drawer__sort-select"
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-        >
-          <option value="element">Sort by Element</option>
-          <option value="weapon">Sort by Weapon</option>
-          <option value="rarity">Sort by Rarity</option>
-          <option value="alphabetical">Sort Alphabetically</option>
-        </select>
-      </div>
-      <div className="characters-list">
-        {sortedCharacters.map((char) => (
-          <DraggableCharacter
-            key={char.id}
-            character={char}
-            onClick={() => onSelectCharacter(char.id)}
-            isInTeam={currentTeam.includes(char.id)}
-          />
-        ))}
+    <div className="character-drawer">
+      <div className="character-drawer__content">
+        <div className="characters-list">
+          {sortedCharacters.map((character) => (
+            <DraggableCharacter
+              key={character.id}
+              character={character}
+              onClick={() => onSelectCharacter(character.id)}
+              isInTeam={currentTeam.includes(character.id)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
 function DraggableCharacter({ character, onClick, isInTeam }) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: character.id,
     data: character,
     disabled: isInTeam,
@@ -100,28 +88,27 @@ function DraggableCharacter({ character, onClick, isInTeam }) {
     }
   }, [character.name]);
 
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-      }
-    : undefined;
-
-  // Create a mousedown flag to track if we're dragging
-  const isDragging = useRef(false);
+  // Create a mousedown flag to track if we're manually dragging
+  const isManualDragging = useRef(false);
 
   const handleMouseDown = () => {
-    isDragging.current = false;
+    isManualDragging.current = false;
   };
 
   const handleMouseMove = () => {
-    isDragging.current = true;
+    isManualDragging.current = true;
   };
 
   const handleMouseUp = () => {
-    if (!isDragging.current && !isInTeam) {
+    if (!isManualDragging.current && !isInTeam) {
       onClick();
     }
-    isDragging.current = false;
+    isManualDragging.current = false;
+  };
+
+  // Apply styles conditionally based on isDragging
+  const cardStyle = {
+    visibility: isDragging ? "hidden" : "visible",
   };
 
   return (
@@ -130,7 +117,7 @@ function DraggableCharacter({ character, onClick, isInTeam }) {
       className={`character-card character-card--${character.element.toLowerCase()} ${
         isInTeam ? "character-card--in-team" : ""
       }`}
-      style={style}
+      style={cardStyle}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -138,7 +125,12 @@ function DraggableCharacter({ character, onClick, isInTeam }) {
       {...listeners}
     >
       <CharacterImage name={character.name} className="character-card__image" />
-      <span ref={nameRef}>{character.name}</span>
+      <div className="character-card__element"></div>
+      <div className="character-card__name-container">
+        <div className="character-card__name" ref={nameRef}>
+          {character.name}
+        </div>
+      </div>
     </div>
   );
 }

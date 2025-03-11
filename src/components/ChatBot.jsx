@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "preact/hooks";
 import { MessageSquare, X, Send, Key, AlertTriangle } from "lucide-react";
+import "../styles/chatbot.css";
 
 export default function ChatBot({ apiKeyStatus, onNeedApiKey }) {
   const [isOpen, setIsOpen] = useState(false);

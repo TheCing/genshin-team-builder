@@ -1,13 +1,14 @@
-import { useState, useEffect, useRef } from "preact/hooks";
+import { useState, useEffect, useRef, useCallback } from "preact/hooks";
+import { memo } from "preact/compat";
 import { ALL_CHARACTERS } from "./data/characters.js";
 import CharacterDrawer from "./components/CharacterDrawer.jsx";
 import TeamSlots from "./components/TeamSlots.jsx";
 import OwnedCharactersManager from "./components/CharactersManager.jsx";
-import { DndContext } from "@dnd-kit/core";
+import { DndContext, DragOverlay } from "@dnd-kit/core";
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 import CharacterImage from "./components/CharacterImage.jsx";
 import TeamResonance from "./components/TeamResonance.jsx";
 import BackgroundDrawer from "./components/BackgroundDrawer.jsx";
-import GuidePopup from "./components/GuidePopup.jsx";
 import Dropdown from "./components/Dropdown.jsx";
 import {
   Sparkles,
@@ -23,6 +24,292 @@ import ChatBot from "./components/ChatBot.jsx";
 import ApiKeyManager from "./components/ApiKeyManager.jsx";
 import "./styles/api-key-manager.css";
 import "./styles/api-key-button.css";
+import CharacterTabs from "./components/CharacterTabs.jsx";
+import BackgroundSelector from "./components/BackgroundSelector.jsx";
+import "./styles/main.css";
+import "./styles/settings-panel.css";
+
+// Custom debounce hook defined outside of the component
+function useDebounce(callback, delay) {
+  const timeoutRef = useRef(null);
+
+  const debouncedCallback = useCallback(
+    (...args) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        callback(...args);
+      }, delay);
+    },
+    [callback, delay]
+  );
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  return debouncedCallback;
+}
+
+// Create a TeamNameInput component to isolate state changes
+const TeamNameInput = memo(function TeamNameInput({
+  value,
+  onChange,
+  onKeyDown,
+}) {
+  const [localValue, setLocalValue] = useState(value);
+
+  // Use local state for input value
+  const handleChange = (e) => {
+    const newValue = e.target.value;
+    setLocalValue(newValue);
+    // Only update parent state when debounced
+    onChange(newValue);
+  };
+
+  // Update local value when parent value changes
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  return (
+    <input
+      type="text"
+      className="team-builder__team-name-input"
+      value={localValue}
+      onInput={handleChange}
+      onKeyDown={onKeyDown}
+      placeholder="Team name"
+    />
+  );
+});
+
+// First, define the SavedTeam component which contains its own memoized team member
+function SavedTeam({
+  team,
+  index,
+  onDelete,
+  onEdit,
+  allTeamsCollapsed,
+  characters,
+  showGuideFor,
+}) {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showShareTooltip, setShowShareTooltip] = useState(false);
+
+  // Define TeamMember directly within SavedTeam to avoid reference issues
+  const TeamMember = memo(
+    function TeamMember({ character }) {
+      const nameRef = useRef(null);
+
+      useEffect(() => {
+        if (nameRef.current) {
+          const span = nameRef.current;
+          const parent = span.parentElement;
+          const scale = Math.min(
+            1,
+            (parent.clientWidth - 8) / span.scrollWidth
+          );
+          span.style.setProperty("--scale", scale);
+        }
+      }, [character.name]);
+
+      const handleCharacterClick = (e) => {
+        e.stopPropagation();
+
+        if (!character?.guides?.length) {
+          return;
+        }
+
+        showGuideFor(character);
+      };
+
+      return (
+        <div
+          className={`team-builder__team-member team-builder__team-member--${character.element.toLowerCase()} ${
+            character.guides?.length
+              ? "team-builder__team-member--has-guides"
+              : ""
+          }`}
+          onClick={handleCharacterClick}
+        >
+          <CharacterImage
+            name={character.name}
+            className="team-builder__team-member-image"
+          />
+          <div className="team-builder__team-member-element"></div>
+          <div className="team-builder__team-member-name-container">
+            <span ref={nameRef} className="team-builder__team-member-name">
+              {character.name}
+            </span>
+          </div>
+        </div>
+      );
+    },
+    (prevProps, nextProps) => {
+      return prevProps.character.id === nextProps.character.id;
+    }
+  );
+
+  useEffect(() => {
+    setIsCollapsed(allTeamsCollapsed);
+  }, [allTeamsCollapsed]);
+
+  const handleShare = async (e) => {
+    e.stopPropagation();
+
+    try {
+      const shareData = {
+        teamName: team.teamName,
+        members: team.members,
+      };
+
+      // Encode team data
+      const encodedData = btoa(JSON.stringify(shareData));
+
+      // Use the share route instead of direct URL
+      const shareUrl = `${window.location.origin}/share/${encodedData}`;
+
+      if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
+        await navigator.share({
+          title: `Genshin Team: ${team.teamName}`,
+          text: `Check out my Genshin Impact team: ${team.teamName}`,
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        setShowShareTooltip(true);
+        setTimeout(() => setShowShareTooltip(false), 2000);
+      }
+    } catch (err) {
+      console.error("Error sharing:", err);
+    }
+  };
+
+  return (
+    <div className="team-builder__team-item">
+      <div className="team-builder__team-header">
+        <div className="team-builder__team-header-left">
+          <button
+            className={`team-builder__collapse-button ${
+              isCollapsed ? "team-builder__collapse-button--collapsed" : ""
+            }`}
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            aria-label={isCollapsed ? "Expand team" : "Collapse team"}
+          >
+            ▼
+          </button>
+          <h3 className="team-builder__team-name">{team.teamName}</h3>
+        </div>
+        <div className="team-builder__team-actions">
+          <button
+            className="team-builder__team-action-button team-builder__team-action-button--share"
+            onClick={handleShare}
+            title="Share team"
+          >
+            <Share2 size={16} />
+          </button>
+          <button
+            className="team-builder__team-action-button"
+            onClick={() => onEdit(index)}
+            title="Edit team"
+          >
+            <Edit size={16} />
+          </button>
+          <button
+            className="team-builder__team-action-button team-builder__team-action-button--delete"
+            onClick={() => onDelete(index)}
+            title="Delete team"
+          >
+            <Trash size={16} />
+          </button>
+        </div>
+        {showShareTooltip && (
+          <div className="team-builder__share-tooltip">Link copied!</div>
+        )}
+      </div>
+      <div
+        className={`team-builder__team-content ${
+          isCollapsed ? "team-builder__team-content--collapsed" : ""
+        }`}
+      >
+        <div className="team-builder__team-members">
+          {team.members.map((charId, memberIndex) => {
+            const character = characters.find((c) => c.id === charId);
+            if (!character) return null;
+            return (
+              <TeamMember key={charId || memberIndex} character={character} />
+            );
+          })}
+        </div>
+        <TeamResonance
+          teamMembers={team.members
+            .map((id) => characters.find((c) => c.id === id))
+            .filter(Boolean)}
+        />
+      </div>
+    </div>
+  );
+}
+
+// Then, define MemoizedSavedTeam
+const MemoizedSavedTeam = memo(SavedTeam);
+
+// Stable equality function for SavedTeamsContainer
+const savedTeamsContainerPropsAreEqual = (prevProps, nextProps) => {
+  // Custom equality function - only update if these props changed
+  return (
+    prevProps.teams === nextProps.teams &&
+    prevProps.characters === nextProps.characters &&
+    prevProps.allTeamsCollapsed === nextProps.allTeamsCollapsed &&
+    prevProps.showGuideFor === nextProps.showGuideFor &&
+    prevProps.onDeleteTeam === nextProps.onDeleteTeam &&
+    prevProps.onEditTeam === nextProps.onEditTeam
+  );
+};
+
+// Now define SavedTeamsContainer which uses MemoizedSavedTeam
+const SavedTeamsContainer = memo(function SavedTeamsContainer({
+  teams,
+  characters,
+  showGuideFor,
+  onDeleteTeam,
+  onEditTeam,
+  allTeamsCollapsed,
+}) {
+  // If no teams, show empty state
+  if (teams.length === 0) {
+    return (
+      <p className="team-builder__empty-state">No teams saved. Get building!</p>
+    );
+  }
+
+  // Render the teams
+  return (
+    <>
+      {teams.map((team, index) => (
+        <MemoizedSavedTeam
+          key={team.id || index} // Use a stable key if possible
+          team={team}
+          index={index}
+          onDelete={() => onDeleteTeam(index)}
+          onEdit={() => onEditTeam(index)}
+          allTeamsCollapsed={allTeamsCollapsed}
+          characters={characters}
+          showGuideFor={showGuideFor}
+        />
+      ))}
+    </>
+  );
+},
+savedTeamsContainerPropsAreEqual);
 
 export default function App() {
   // Load from local storage or fall back to defaults
@@ -62,6 +349,20 @@ export default function App() {
     perplexity: false,
   });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [selectedBackground, setSelectedBackground] = useState(() => {
+    return localStorage.getItem("selectedBackground") || "none";
+  });
+  const [activeId, setActiveId] = useState(null);
+  const [activeCharacter, setActiveCharacter] = useState(null);
+  const [activeGuide, setActiveGuide] = useState(null);
+
+  // Use useRef to keep reference to current teams without causing re-renders
+  const teamsRef = useRef(teams);
+
+  // Update the ref when teams change
+  useEffect(() => {
+    teamsRef.current = teams;
+  }, [teams]);
 
   // Whenever characters or teams change, update local storage
   useEffect(() => {
@@ -74,13 +375,23 @@ export default function App() {
 
   // Check if API keys exist
   useEffect(() => {
-    const deepseekKey = localStorage.getItem("user_deepseek_key");
-    const perplexityKey = localStorage.getItem("user_perplexity_key");
+    const checkApiKeys = () => {
+      const deepseekKey = localStorage.getItem("user_deepseek_key");
+      const perplexityKey = localStorage.getItem("user_perplexity_key");
 
-    setApiKeyStatus({
-      deepseek: !!deepseekKey,
-      perplexity: !!perplexityKey,
-    });
+      setApiKeyStatus({
+        deepseek: !!deepseekKey,
+        perplexity: !!perplexityKey,
+      });
+    };
+
+    // Check on mount and when the API key manager closes
+    checkApiKeys();
+
+    // Add event listener for storage changes (in case keys are updated in another tab)
+    window.addEventListener("storage", checkApiKeys);
+
+    return () => window.removeEventListener("storage", checkApiKeys);
   }, [isApiKeyManagerOpen]);
 
   // Handling adding a character to the current team
@@ -119,30 +430,41 @@ export default function App() {
 
   // Save the current team to the teams array
   const saveTeam = () => {
-    // Check for empty name
+    // Validate
     if (!teamName.trim()) {
-      console.warn("Please enter a team name");
-      const input = document.querySelector(".team-builder__team-name-input");
-      input.classList.add("team-builder__team-name-input--error");
+      // Highlight the input
+      document
+        .querySelector(".team-builder__team-name-input")
+        .classList.add("team-builder__team-name-input--error");
       setTimeout(() => {
-        input.classList.remove("team-builder__team-name-input--error");
-      }, 820); // Matches shake animation duration
+        document
+          .querySelector(".team-builder__team-name-input")
+          .classList.remove("team-builder__team-name-input--error");
+      }, 800);
       return;
     }
 
-    // Check for empty slots
-    if (currentTeam.some((slot) => slot === null)) {
-      console.warn("Please fill all team slots");
-      const slots = document.querySelector(".team-slots__container");
-      slots.classList.add("team-slots__container--error");
+    if (!currentTeam.some(Boolean)) {
+      // Highlight the team slots
+      document
+        .querySelector(".team-slots__container")
+        .classList.add("team-slots__container--error");
       setTimeout(() => {
-        slots.classList.remove("team-slots__container--error");
-      }, 820);
+        document
+          .querySelector(".team-slots__container")
+          .classList.remove("team-slots__container--error");
+      }, 800);
       return;
     }
 
-    setTeams((prev) => [...prev, { teamName, members: [...currentTeam] }]);
-    // Clear the current team
+    // Create a unique ID for this team
+    const newTeam = {
+      id: `team-${Date.now()}`,
+      teamName,
+      members: [...currentTeam],
+    };
+
+    setTeams((prev) => [...prev, newTeam]);
     setCurrentTeam([null, null, null, null]);
     setTeamName("");
   };
@@ -179,6 +501,10 @@ export default function App() {
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
+    // Reset active drag state
+    setActiveId(null);
+    setActiveCharacter(null);
+
     if (over && active.id !== over.id) {
       const charId = active.id;
       const slotIndex = over.data.current.index;
@@ -200,117 +526,41 @@ export default function App() {
       return {
         dropAnimation: null,
         dragOverlay: {
-          className: "character-card--invalid",
+          className: "character-card--invalid dragging",
         },
       };
     }
-    return null;
+    return {
+      dropAnimation: null,
+    };
   };
 
-  // Add these new functions
-  const deleteTeam = (indexToDelete) => {
-    const teamToDelete = teams[indexToDelete];
+  const handleDragStart = (event) => {
+    const { active } = event;
+    setActiveId(active.id);
+    const draggedCharacter = characters.find((c) => c.id === active.id);
+    setActiveCharacter(draggedCharacter);
+  };
+
+  // Create stable callbacks
+  const deleteTeam = useCallback((indexToDelete) => {
+    const teamToDelete = teamsRef.current[indexToDelete];
     if (
-      window.confirm(
-        `Are you sure you want to delete the team "${teamToDelete.teamName}"?`
+      confirm(
+        `Are you sure you want to delete team "${teamToDelete.teamName}"?`
       )
     ) {
       setTeams((prev) => prev.filter((_, index) => index !== indexToDelete));
     }
-  };
+  }, []);
 
-  const editTeam = (indexToEdit) => {
-    const teamToEdit = teams[indexToEdit];
+  const editTeam = useCallback((indexToEdit) => {
+    const teamToEdit = teamsRef.current[indexToEdit];
     setCurrentTeam(teamToEdit.members);
     setTeamName(teamToEdit.teamName);
     // Remove the team being edited
     setTeams((prev) => prev.filter((_, index) => index !== indexToEdit));
-  };
-
-  function SavedTeamMember({ character }) {
-    const nameRef = useRef(null);
-    const [showGuides, setShowGuides] = useState(false);
-    const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
-
-    useEffect(() => {
-      if (nameRef.current) {
-        const span = nameRef.current;
-        const parent = span.parentElement;
-        const scale = Math.min(1, (parent.clientWidth - 8) / span.scrollWidth);
-        span.style.setProperty("--scale", scale);
-      }
-    }, [character.name]);
-
-    const handleCharacterClick = (e) => {
-      e.stopPropagation();
-
-      console.log("Character clicked:", character?.name);
-      console.log("Has guides:", character?.guides?.length > 0);
-
-      if (!character?.guides?.length) {
-        console.log("No guides available for", character?.name);
-        return;
-      }
-
-      // Calculate position for popup, accounting for scroll and viewport
-      const rect = e.currentTarget.getBoundingClientRect();
-      const scrollLeft =
-        window.pageXOffset || document.documentElement.scrollLeft;
-      const scrollTop =
-        window.pageYOffset || document.documentElement.scrollTop;
-      const viewportWidth = window.innerWidth;
-
-      // Check if there's enough space on the right
-      const spaceOnRight = viewportWidth - rect.right;
-      const popupWidth = 200; // Minimum width of the popup
-      const padding = 10; // Desired padding from edge
-
-      const newPosition = {
-        x:
-          spaceOnRight >= popupWidth + padding
-            ? rect.right + scrollLeft + padding // Show on right
-            : rect.left + scrollLeft - popupWidth - padding, // Show on left
-        y: rect.top + scrollTop,
-      };
-
-      console.log("Popup position:", newPosition);
-      console.log("Space on right:", spaceOnRight);
-
-      setPopupPosition(newPosition);
-      setShowGuides(true);
-      console.log("Show guides set to true");
-    };
-
-    return (
-      <div
-        className={`team-builder__team-member team-builder__team-member--${character.element.toLowerCase()} ${
-          character.guides?.length
-            ? "team-builder__team-member--has-guides"
-            : ""
-        }`}
-        onClick={handleCharacterClick}
-      >
-        <CharacterImage
-          name={character.name}
-          className="team-builder__team-member-image"
-        />
-        <span ref={nameRef} className="team-builder__team-member-name">
-          {character.name}
-        </span>
-        {showGuides && (
-          <GuidePopup
-            character={character}
-            position={popupPosition}
-            onClose={(e) => {
-              if (e) e.stopPropagation();
-              console.log("Closing guide popup for", character?.name);
-              setShowGuides(false);
-            }}
-          />
-        )}
-      </div>
-    );
-  }
+  }, []);
 
   const handleDeleteAllData = () => {
     if (
@@ -336,117 +586,24 @@ export default function App() {
     }
   };
 
+  // Debounced teamName setter
+  const debouncedSetTeamName = useDebounce((value) => {
+    setTeamName(value);
+  }, 100);
+
+  // Handler for team name input
+  const handleTeamNameInput = (e) => {
+    // No need to redundantly assign e.target.value
+    // Just pass the value to the debounced function
+    debouncedSetTeamName(e.target.value);
+  };
+
   // Add this handler to handle the Enter key
   const handleTeamNameKeyDown = (e) => {
     if (e.key === "Enter") {
       saveTeam();
     }
   };
-
-  function SavedTeam({ team, index, onDelete, onEdit, allTeamsCollapsed }) {
-    const [isCollapsed, setIsCollapsed] = useState(false);
-    const [showShareTooltip, setShowShareTooltip] = useState(false);
-
-    useEffect(() => {
-      setIsCollapsed(allTeamsCollapsed);
-    }, [allTeamsCollapsed]);
-
-    const handleShare = async (e) => {
-      e.stopPropagation();
-
-      try {
-        const shareData = {
-          teamName: team.teamName,
-          members: team.members,
-        };
-
-        // Encode team data
-        const encodedData = btoa(JSON.stringify(shareData));
-
-        // Use the share route instead of direct URL
-        const shareUrl = `${window.location.origin}/share/${encodedData}`;
-
-        if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
-          await navigator.share({
-            title: `Genshin Team: ${team.teamName}`,
-            text: `Check out my Genshin Impact team: ${team.teamName}`,
-            url: shareUrl,
-          });
-        } else {
-          await navigator.clipboard.writeText(shareUrl);
-          setShowShareTooltip(true);
-          setTimeout(() => setShowShareTooltip(false), 2000);
-        }
-      } catch (err) {
-        console.error("Error sharing:", err);
-      }
-    };
-
-    return (
-      <div className="team-builder__team-item">
-        <div className="team-builder__team-header">
-          <div className="team-builder__team-header-left">
-            <button
-              className={`team-builder__collapse-button ${
-                isCollapsed ? "team-builder__collapse-button--collapsed" : ""
-              }`}
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              aria-label={isCollapsed ? "Expand team" : "Collapse team"}
-            >
-              ▼
-            </button>
-            <h3 className="team-builder__team-name">{team.teamName}</h3>
-          </div>
-          <div className="team-builder__team-actions">
-            <button
-              className="team-builder__team-action-button team-builder__team-action-button--share"
-              onClick={handleShare}
-              title="Share team"
-            >
-              <Share2 size={16} />
-            </button>
-            <button
-              className="team-builder__team-action-button"
-              onClick={() => onEdit(index)}
-              title="Edit team"
-            >
-              <Edit size={16} />
-            </button>
-            <button
-              className="team-builder__team-action-button team-builder__team-action-button--delete"
-              onClick={() => onDelete(index)}
-              title="Delete team"
-            >
-              <Trash size={16} />
-            </button>
-          </div>
-          {showShareTooltip && (
-            <div className="team-builder__share-tooltip">Link copied!</div>
-          )}
-        </div>
-        <div
-          className={`team-builder__team-content ${
-            isCollapsed ? "team-builder__team-content--collapsed" : ""
-          }`}
-        >
-          <div className="team-builder__team-members">
-            {team.members.map((charId, memberIndex) => {
-              const character = characters.find((c) => c.id === charId);
-              if (!character) return null;
-              return (
-                <SavedTeamMember key={memberIndex} character={character} />
-              );
-            })}
-          </div>
-          <TeamResonance
-            teamMembers={team.members
-              .map((id) => characters.find((c) => c.id === id))
-              .filter(Boolean)}
-          />
-        </div>
-      </div>
-    );
-  }
 
   const handleCollapseAll = () => {
     setAllTeamsCollapsed(true);
@@ -569,8 +726,87 @@ export default function App() {
     }
   };
 
+  const handleBackgroundChange = (newBackground) => {
+    setSelectedBackground(newBackground);
+
+    // Apply the background immediately
+    if (newBackground && newBackground !== "none") {
+      document.body.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${newBackground})`;
+    } else {
+      document.body.style.backgroundImage = "none";
+    }
+
+    // Save to localStorage
+    localStorage.setItem("selectedBackground", newBackground);
+  };
+
+  // Use useCallback to make this function stable across renders
+  const showGuideFor = useCallback((character) => {
+    if (character?.guides?.length) {
+      setActiveGuide(character);
+    }
+  }, []);
+
+  // Use useCallback for the close guide function as well
+  const closeGuide = useCallback(() => {
+    setActiveGuide(null);
+  }, []);
+
+  // Add keyboard event handler for escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && activeGuide) {
+        closeGuide();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeGuide]);
+
+  // Lock page scrolling when popup is open
+  useEffect(() => {
+    if (activeGuide) {
+      // Save the current scroll position
+      const scrollY = window.scrollY;
+
+      // Add styles to lock scrolling
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+
+      return () => {
+        // Restore scrolling when popup closes
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.width = "";
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [activeGuide]);
+
+  // Apply the background when the app loads
+  useEffect(() => {
+    const applyBackground = () => {
+      const bgPath = selectedBackground;
+      if (bgPath && bgPath !== "none") {
+        document.body.style.backgroundImage = `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${bgPath})`;
+      } else {
+        document.body.style.backgroundImage = "none";
+      }
+    };
+
+    applyBackground();
+  }, [selectedBackground]);
+
   return (
-    <DndContext onDragEnd={handleDragEnd} onDragOver={handleDragOver}>
+    <DndContext
+      onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
+      onDragStart={handleDragStart}
+      modifiers={[restrictToWindowEdges]}
+    >
       <div className="team-builder">
         <div className="team-builder__header">
           <h1 className="team-builder__title">Genshin Team Builder</h1>
@@ -580,214 +816,178 @@ export default function App() {
             onClick={() => setIsSettingsOpen(true)}
             title="Settings"
           >
-            <Settings size={20} />
+            <Settings size={24} />
           </button>
         </div>
 
-        <div className="team-builder__save-form">
-          <input
-            type="text"
-            className="team-builder__team-name-input"
-            value={teamName}
-            onInput={(e) => setTeamName(e.target.value)}
-            onKeyDown={handleTeamNameKeyDown}
-            placeholder="Team name"
-          />
-          <button className="team-builder__save-button" onClick={saveTeam}>
-            Save Team
-          </button>
-        </div>
-
-        <TeamSlots
-          characters={characters}
-          currentTeam={currentTeam}
-          onRemoveMember={removeFromTeam}
-          onDropCharacter={dropCharacterInSlot}
-          onClearTeam={clearTeam}
-        />
-
-        <Dropdown
-          title="Try out AI team building (beta)"
-          icon={Sparkles}
-          defaultOpen={false}
-        >
-          {!apiKeyStatus.deepseek && !apiKeyStatus.perplexity && (
-            <div className="ai-team-generator__no-keys-warning">
-              <AlertTriangle size={16} />
-              <span>You need to provide API keys to use AI features.</span>
-              <button onClick={() => setIsApiKeyManagerOpen(true)}>
-                Add API Keys
-              </button>
-            </div>
-          )}
-
-          <form onSubmit={handleAiTeamSubmit} className="team-builder__ai-form">
-            <div className="team-builder__model-selector-row">
-              <ModelSelector
-                model={selectedModel}
-                onModelChange={setSelectedModel}
-                apiKeyStatus={apiKeyStatus}
-              />
-              <button
-                className="team-builder__api-key-button team-builder__api-key-button--inline"
-                onClick={() => setIsApiKeyManagerOpen(true)}
-                title="Manage API Keys"
-              >
-                <Key size={16} />
-                API Keys
-                {!apiKeyStatus.deepseek && !apiKeyStatus.perplexity && (
-                  <AlertTriangle
-                    size={12}
-                    className="team-builder__api-key-warning"
-                  />
-                )}
-              </button>
-            </div>
-
-            <div className="team-builder__ai-form-row">
-              <input
-                type="text"
-                value={aiPrompt}
-                onInput={(e) => setAiPrompt(e.target.value)}
-                placeholder="Describe the team you want to build..."
-                className="team-builder__team-name-input"
-                disabled={
-                  isGenerating ||
-                  (selectedModel === "deepseek-chat" &&
-                    !apiKeyStatus.deepseek) ||
-                  (selectedModel === "sonar" && !apiKeyStatus.perplexity)
-                }
-              />
-              <button
-                type="submit"
-                className="team-builder__save-button"
-                disabled={
-                  isGenerating ||
-                  (selectedModel === "deepseek-chat" &&
-                    !apiKeyStatus.deepseek) ||
-                  (selectedModel === "sonar" && !apiKeyStatus.perplexity)
-                }
-              >
-                {isGenerating ? "Generating..." : "Generate Team"}
-              </button>
-            </div>
-          </form>
-          {generationError && (
-            <p className="team-builder__error-message">{generationError}</p>
-          )}
-        </Dropdown>
-
-        <CharacterDrawer
-          characters={characters}
-          onSelectCharacter={addToTeam}
-          currentTeam={currentTeam}
-        />
-
-        <hr className="team-builder__divider" />
-
-        <section className="team-builder__saved-teams">
-          <div className="team-builder__section-header">
-            <h2 className="team-builder__section-title">Saved Teams</h2>
-            <div className="team-builder__section-controls">
-              <button
-                className="team-builder__collapse-all-button"
-                onClick={handleCollapseAll}
-                title="Collapse all teams"
-              >
-                Collapse All
-              </button>
-              <button
-                className="team-builder__collapse-all-button"
-                onClick={handleExpandAll}
-                title="Expand all teams"
-              >
-                Expand All
-              </button>
-            </div>
-          </div>
-          <p className="team-builder__section-description">
-            Click on a character to view their guides.
-          </p>
-          {teams.length === 0 ? (
-            <p className="team-builder__empty-state">
-              No teams saved. Get building!
-            </p>
-          ) : (
-            teams.map((team, teamIndex) => (
-              <SavedTeam
-                key={teamIndex}
-                team={team}
-                index={teamIndex}
-                onDelete={deleteTeam}
-                onEdit={editTeam}
-                allTeamsCollapsed={allTeamsCollapsed}
-              />
-            ))
-          )}
-        </section>
-
-        <hr className="team-builder__divider" />
-
-        <section className="team-builder__character-manager">
-          <h2 className="team-builder__section-title">
-            Manage Owned Characters
-          </h2>
-          <OwnedCharactersManager
+        <div className="team-builder__left-column">
+          <CharacterTabs
             characters={characters}
             setCharacters={setCharacters}
-          />
-        </section>
-
-        <hr className="team-builder__divider" />
-
-        <div className="team-builder__data-controls">
-          <button
-            className="team-builder__export-button"
-            onClick={handleExportData}
-          >
-            Export Data
-          </button>
-          <input
-            type="file"
-            accept=".json"
-            onChange={handleImportData}
-            className="team-builder__import-input"
+            onSelectCharacter={addToTeam}
+            currentTeam={currentTeam}
           />
         </div>
 
-        <div className="team-builder__danger-zone">
-          <h2 className="team-builder__section-title">Danger Zone</h2>
-          <button
-            className="team-builder__delete-all-button"
-            onClick={handleDeleteAllData}
-          >
-            Delete All Data
-          </button>
-        </div>
-
-        <footer className="team-builder__footer">
-          <div className="team-builder__footer-content">
-            <span>Crafted by cing</span>
-            <span>
-              Built with{" "}
-              <a
-                href="https://preactjs.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Preact
-              </a>
-            </span>
-            <a
-              href="https://github.com/TheCing/genshin-team-builder/issues/new"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="team-builder__feedback-button"
-            >
-              Give Feedback
-            </a>
+        <div className="team-builder__right-column">
+          <div className="team-builder__save-form">
+            <TeamNameInput
+              value={teamName}
+              onChange={debouncedSetTeamName}
+              onKeyDown={handleTeamNameKeyDown}
+            />
+            <button className="team-builder__save-button" onClick={saveTeam}>
+              Save Team
+            </button>
           </div>
-        </footer>
+
+          <TeamSlots
+            characters={characters}
+            currentTeam={currentTeam}
+            onRemoveMember={removeFromTeam}
+            onDropCharacter={dropCharacterInSlot}
+            onClearTeam={clearTeam}
+          />
+
+          <Dropdown
+            title="Try out AI team building (beta)"
+            icon={Sparkles}
+            defaultOpen={false}
+          >
+            {!apiKeyStatus.deepseek && !apiKeyStatus.perplexity && (
+              <div className="ai-team-generator__no-keys-warning">
+                <AlertTriangle size={16} />
+                <span>You need to provide API keys to use AI features.</span>
+                <button onClick={() => setIsApiKeyManagerOpen(true)}>
+                  Add API Keys
+                </button>
+              </div>
+            )}
+
+            <form
+              onSubmit={handleAiTeamSubmit}
+              className="team-builder__ai-form"
+            >
+              <div className="team-builder__model-selector-row">
+                <ModelSelector
+                  model={selectedModel}
+                  onModelChange={setSelectedModel}
+                  apiKeyStatus={apiKeyStatus}
+                />
+                <button
+                  className="team-builder__api-key-button team-builder__api-key-button--inline"
+                  onClick={() => setIsApiKeyManagerOpen(true)}
+                  title="Manage API Keys"
+                >
+                  <Key size={16} />
+                  API Keys
+                  {!apiKeyStatus.deepseek && !apiKeyStatus.perplexity && (
+                    <AlertTriangle
+                      size={12}
+                      className="team-builder__api-key-warning"
+                    />
+                  )}
+                </button>
+              </div>
+
+              <div className="team-builder__ai-form-row">
+                <input
+                  type="text"
+                  value={aiPrompt}
+                  onInput={(e) => setAiPrompt(e.target.value)}
+                  placeholder="Describe the team you want to build..."
+                  className="team-builder__team-name-input"
+                  disabled={
+                    isGenerating ||
+                    (selectedModel === "deepseek-chat" &&
+                      !apiKeyStatus.deepseek) ||
+                    (selectedModel === "sonar" && !apiKeyStatus.perplexity)
+                  }
+                />
+                <button
+                  type="submit"
+                  className="team-builder__save-button"
+                  disabled={
+                    isGenerating ||
+                    (selectedModel === "deepseek-chat" &&
+                      !apiKeyStatus.deepseek) ||
+                    (selectedModel === "sonar" && !apiKeyStatus.perplexity)
+                  }
+                >
+                  {isGenerating ? "Generating..." : "Generate Team"}
+                </button>
+              </div>
+            </form>
+            {generationError && (
+              <p className="team-builder__error-message">{generationError}</p>
+            )}
+          </Dropdown>
+
+          <section className="team-builder__saved-teams">
+            <div className="team-builder__section-header">
+              <h2 className="team-builder__section-title">Saved Teams</h2>
+              <div className="team-builder__section-controls">
+                <button
+                  className="team-builder__collapse-all-button"
+                  onClick={handleCollapseAll}
+                  title="Collapse all teams"
+                >
+                  Collapse All
+                </button>
+                <button
+                  className="team-builder__collapse-all-button"
+                  onClick={handleExpandAll}
+                  title="Expand all teams"
+                >
+                  Expand All
+                </button>
+              </div>
+            </div>
+            <p className="team-builder__section-description">
+              Click on a character to view their guides.
+            </p>
+            <SavedTeamsContainer
+              teams={teams}
+              characters={characters}
+              showGuideFor={showGuideFor}
+              onDeleteTeam={deleteTeam}
+              onEditTeam={editTeam}
+              allTeamsCollapsed={allTeamsCollapsed}
+            />
+          </section>
+
+          <div className="team-builder__data-controls">
+            <button
+              className="data-control-button team-builder__export-button"
+              onClick={handleExportData}
+            >
+              Export Data
+            </button>
+            <input
+              type="file"
+              id="import-data"
+              accept=".json"
+              onChange={handleImportData}
+              className="team-builder__import-input"
+            />
+            <label
+              htmlFor="import-data"
+              className="data-control-button team-builder__export-button"
+            >
+              Import Data
+            </label>
+          </div>
+
+          <div className="team-builder__danger-zone">
+            <h2 className="team-builder__section-title">Danger Zone</h2>
+            <button
+              className="data-control-button team-builder__delete-all-button"
+              onClick={handleDeleteAllData}
+            >
+              Delete All Data
+            </button>
+          </div>
+        </div>
 
         {isSettingsOpen && (
           <div className="settings-panel">
@@ -802,22 +1002,25 @@ export default function App() {
                   className="settings-panel__close-button"
                   onClick={() => setIsSettingsOpen(false)}
                 >
-                  ×
+                  ✕
                 </button>
               </div>
 
               <div className="settings-panel__section">
                 <h3 className="settings-panel__section-title">Background</h3>
                 <p className="settings-panel__section-description">
-                  Choose a background image for the application
+                  Choose a background image for the app.
                 </p>
-                <BackgroundDrawer inSettingsPanel={true} />
+                <BackgroundSelector
+                  selectedBackground={selectedBackground}
+                  onSelectBackground={handleBackgroundChange}
+                />
               </div>
 
               <div className="settings-panel__section">
                 <h3 className="settings-panel__section-title">API Keys</h3>
                 <p className="settings-panel__section-description">
-                  Manage your API keys for AI features
+                  Manage your API keys for AI features.
                 </p>
                 <button
                   className="settings-panel__api-key-button"
@@ -837,16 +1040,74 @@ export default function App() {
           </div>
         )}
 
-        <ApiKeyManager
-          isOpen={isApiKeyManagerOpen}
-          onClose={() => setIsApiKeyManagerOpen(false)}
-        />
+        {isApiKeyManagerOpen && (
+          <ApiKeyManager
+            isOpen={isApiKeyManagerOpen}
+            onClose={() => setIsApiKeyManagerOpen(false)}
+          />
+        )}
 
         <ChatBot
           apiKeyStatus={apiKeyStatus}
           onNeedApiKey={() => setIsApiKeyManagerOpen(true)}
+          characters={characters}
+          currentTeam={currentTeam.map((id) =>
+            id ? characters.find((c) => c.id === id) : null
+          )}
+          teams={teams}
         />
       </div>
+
+      {/* Global guide popup */}
+      {activeGuide && (
+        <div className="global-popup-backdrop" onClick={closeGuide}>
+          <div className="guide-popup" onClick={(e) => e.stopPropagation()}>
+            <div className="guide-popup__header">
+              <h3>{activeGuide.name} Guides</h3>
+              <button className="guide-popup__close" onClick={closeGuide}>
+                ×
+              </button>
+            </div>
+
+            <div className="guide-popup__content">
+              {activeGuide.guides &&
+                activeGuide.guides.map((guide, index) => (
+                  <a
+                    key={index}
+                    href={guide.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="guide-popup__link"
+                  >
+                    {guide.title}
+                  </a>
+                ))}
+            </div>
+
+            <div className="guide-popup__footer">
+              <small>Guides provided by KQM</small>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DragOverlay to ensure dragged items appear on top */}
+      <DragOverlay className="dnd-overlay" dropAnimation={null} zIndex={9999}>
+        {activeId && activeCharacter && (
+          <div
+            className={`character-card character-card--${activeCharacter.element.toLowerCase()} dragging`}
+          >
+            <CharacterImage
+              name={activeCharacter.name}
+              className="character-card__image"
+            />
+            <div className="character-card__element"></div>
+            <div className="character-card__name-container">
+              <div className="character-card__name">{activeCharacter.name}</div>
+            </div>
+          </div>
+        )}
+      </DragOverlay>
     </DndContext>
   );
 }

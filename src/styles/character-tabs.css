@@ -1,0 +1,147 @@
+/* Character Tabs Component */
+.character-tabs {
+  height: auto;
+  max-height: 650px; /* Increased height to make the drawer larger */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.character-tabs__header {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(35, 35, 35, 0.95);
+  padding: 0;
+}
+
+.character-tabs__tab-buttons {
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.character-tabs__sort-container {
+  padding: 0.75rem 1rem;
+  width: 100%;
+}
+
+.character-tabs__tab-button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.character-tabs__tab-button:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.character-tabs__tab-button--active {
+  color: #fff;
+  border-bottom: 2px solid #fff;
+}
+
+.character-tabs__content {
+  flex: 1;
+  overflow: auto;
+  max-height: 600px; /* Increased to match the parent container */
+  padding-top: 0; /* Remove top padding since the header is now fixed */
+}
+
+.character-tabs__owned-container {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.character-tabs__owned-header {
+  padding: 0.5rem 1rem;
+  position: sticky;
+  top: 0;
+  background: rgba(35, 35, 35, 0.95);
+  z-index: 10;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.character-tabs__owned-header h3 {
+  margin: 0;
+  margin-bottom: 0.25rem;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.character-tabs__owned-description {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.character-tabs__owned-content {
+  flex: 1;
+  overflow: auto;
+  padding-top: 0.25rem;
+}
+
+/* Fix for the character drawer in the tabs */
+.character-drawer {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.character-drawer__header {
+  display: none;
+}
+
+/* Fix for the sort by element button */
+.character-tabs__header .character-drawer__sort-select {
+  width: 100%;
+  max-width: 250px;
+  background: rgba(60, 60, 60, 0.8);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+/* Fix for the character grid in the tabs */
+.character-tabs__content .characters-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  padding-top: 0.75rem;
+}
+
+/* Remove the media query since our new design works on all screen sizes */
+@media (max-width: 500px) {
+  .character-tabs__header {
+    /* No changes needed - already column */
+  }
+
+  .character-tabs__tab-buttons {
+    /* No changes needed - already full width */
+  }
+
+  .character-tabs__sort-container {
+    /* No changes needed - already full width with padding */
+  }
+}

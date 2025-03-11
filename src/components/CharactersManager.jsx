@@ -61,7 +61,12 @@ function CharacterCard({ character, onToggle }) {
       }`}
     >
       <CharacterImage name={character.name} className="character-card__image" />
-      <span ref={nameRef}>{character.name}</span>
+      <div className="character-card__element"></div>
+      <div className="character-card__name-container">
+        <div className="character-card__name" ref={nameRef}>
+          {character.name}
+        </div>
+      </div>
     </div>
   );
 }

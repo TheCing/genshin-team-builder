@@ -37,17 +37,15 @@ function calculateTeamResonances(teamMembers) {
 }
 
 export default function TeamResonance({ teamMembers }) {
-  const [expandedResonance, setExpandedResonance] = useState(null);
+  const [areResonancesExpanded, setAreResonancesExpanded] = useState(false);
 
   if (!teamMembers) return null;
 
   const resonances = calculateTeamResonances(teamMembers);
   if (resonances.length === 0) return null;
 
-  const handleResonanceClick = (resonanceId) => {
-    setExpandedResonance(
-      expandedResonance === resonanceId ? null : resonanceId
-    );
+  const toggleResonances = () => {
+    setAreResonancesExpanded(!areResonancesExpanded);
   };
 
   return (
@@ -56,11 +54,9 @@ export default function TeamResonance({ teamMembers }) {
         <div
           key={resonance.id}
           className={`team-builder__resonance ${
-            expandedResonance === resonance.id
-              ? "team-builder__resonance--expanded"
-              : ""
+            areResonancesExpanded ? "team-builder__resonance--expanded" : ""
           }`}
-          onClick={() => handleResonanceClick(resonance.id)}
+          onClick={toggleResonances}
         >
           <div className="team-builder__resonance-summary">
             <div className="team-builder__resonance-icons">
@@ -81,7 +77,7 @@ export default function TeamResonance({ teamMembers }) {
             </div>
             <div className="team-builder__resonance-name">{resonance.name}</div>
           </div>
-          {expandedResonance === resonance.id && (
+          {areResonancesExpanded && (
             <div className="team-builder__resonance-description">
               {resonance.description}
             </div>
